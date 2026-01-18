@@ -75,6 +75,8 @@ class StorageService {
   Future<void> setSelectedChild(Child child) async {
     print('💾 DEBUG: Guardando child en storage:');
     print('  ID: ${child.id}');
+    print('  FirstName: ${child.firstName}');
+    print('  Avatar: ${child.avatar}');
     print('  Nombre: ${child.firstName} ${child.paternalLastName}');
     await storage.write('selected_child', jsonEncode(child.toMap()));
     await storage.save();

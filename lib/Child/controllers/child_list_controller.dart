@@ -82,6 +82,9 @@ class ChildListController extends GetxController {
           final bPaternal = b.paternalLastName.toLowerCase();
           return aPaternal.compareTo(bPaternal);
         });
+
+        print('✅ DEBUG: ${_childList.length} children cargados');
+        print(_childList[0]);
         
         // Inicializar la lista filtrada con todos los children
         _searchChildList = List.from(_childList);

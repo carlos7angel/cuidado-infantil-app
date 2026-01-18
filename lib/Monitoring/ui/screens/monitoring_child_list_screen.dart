@@ -5,7 +5,6 @@ import 'package:cuidado_infantil/Config/general/ui_icons.dart';
 import 'package:cuidado_infantil/Config/widgets/empty_list.dart';
 import 'package:cuidado_infantil/Config/widgets/gradient_text.dart';
 import 'package:cuidado_infantil/Config/general/app_config.dart' as config;
-import 'package:cuidado_infantil/Config/widgets/header_profile.dart';
 import 'package:cuidado_infantil/Config/widgets/sliver_app_bar_title.dart';
 import 'package:cuidado_infantil/Intro/ui/screens/home_screen.dart';
 import 'package:cuidado_infantil/Intro/ui/widgets/navigation_menu.dart';

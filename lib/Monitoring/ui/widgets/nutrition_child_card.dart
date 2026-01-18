@@ -55,11 +55,11 @@ class NutritionChildCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             CachedImage(
-              image: 'assets/images/baby.png',
+              image: child.getAvatarImage(),
               isRound: true,
               radius: 90.r,
               color: _getGenderColor(child.gender).withOpacity(0.75),
-              fit: BoxFit.contain,
+              fit: BoxFit.cover,
             ),
             SizedBox(width: 15.w),
             Flexible(

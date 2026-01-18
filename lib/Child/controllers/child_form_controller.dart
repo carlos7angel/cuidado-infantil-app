@@ -33,6 +33,8 @@ class ChildFormController extends GetxController{
   Child? _currentChild;
   Child? get currentChild => _currentChild;
 
+  dynamic avatar;
+
   /// Archivos originales del backend (para mostrar en modo edición)
   Map<String, List<dynamic>?> _originalFiles = {};
   Map<String, List<dynamic>?> get originalFiles => _originalFiles;
@@ -143,6 +145,13 @@ class ChildFormController extends GetxController{
       _familyMembers.removeAt(index);
       update(['family_members']);
     }
+  }
+
+  void setAvatar(dynamic file) {
+    avatar = file;
+    if (_currentChild == null) _currentChild = Child.empty();
+    _currentChild = _currentChild!.copyWith(avatar: file);
+    update(['form_child']);
   }
 
   /// Carga los grupos/rooms desde el endpoint
@@ -457,6 +466,9 @@ class ChildFormController extends GetxController{
         break;
       case 'file_pickup_authorization':
         _currentChild = _currentChild!.copyWith(filePickupAuthorization: value);
+        break;
+      case 'avatar':
+        setAvatar(value);
         break;
     }
   }
@@ -968,6 +980,7 @@ class ChildFormController extends GetxController{
     _initialValues = {};
     childId = null;
     isEditing = false;
+    avatar = null;
     _hasAttemptedSave.value = false;
     update(['family_members', 'form_child']);
   }

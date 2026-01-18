@@ -340,6 +340,13 @@ class ChildService {
       }
     }
 
+    if (child.avatar != null && _isNewFile(child.avatar)) {
+      final multipartFile = await _fileToMultipartFile(child.avatar, 'avatar.jpg');
+      if (multipartFile != null) {
+        data['avatar'] = multipartFile;
+      }
+    }
+
     // ✅ Miembros de la familia
     if (child.familyMembers.isNotEmpty) {
       for (int i = 0; i < child.familyMembers.length; i++) {

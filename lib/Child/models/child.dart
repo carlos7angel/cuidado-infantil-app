@@ -52,6 +52,7 @@ class Child {
   final List<dynamic>? fileUtilityBill;
   final List<dynamic>? fileHomeSketch;
   final List<dynamic>? filePickupAuthorization;
+  final String? avatar;
 
   const Child({
     this.id,
@@ -104,6 +105,7 @@ class Child {
     this.fileUtilityBill,
     this.fileHomeSketch,
     this.filePickupAuthorization,
+    this.avatar,
   });
 
   Child copyWith({
@@ -157,6 +159,7 @@ class Child {
     List<dynamic>? fileUtilityBill,
     List<dynamic>? fileHomeSketch,
     List<dynamic>? filePickupAuthorization,
+    String? avatar,
   }) {
     return Child(
       id: id ?? this.id,
@@ -209,6 +212,7 @@ class Child {
       fileUtilityBill: fileUtilityBill ?? this.fileUtilityBill,
       fileHomeSketch: fileHomeSketch ?? this.fileHomeSketch,
       filePickupAuthorization: filePickupAuthorization ?? this.filePickupAuthorization,
+      avatar: avatar ?? this.avatar,
     );
   }
 
@@ -388,6 +392,15 @@ class Child {
 
   /// Obtiene la ruta de la imagen del avatar según el género del infante
   String getAvatarImage() {
+    final value = avatar;
+
+    if (value is String) {
+      final trimmed = value.trim();
+      if (trimmed.isNotEmpty && trimmed.toLowerCase() != 'null') {
+        return trimmed;
+      }
+    }
+
     return Child.getAvatarImageByGender(gender);
   }
 
@@ -528,6 +541,7 @@ class Child {
       fileUtilityBill: fileUtilityBill != null ? [fileUtilityBill] : (map['file_utility_bill'] as List<dynamic>?),
       fileHomeSketch: fileHomeSketch != null ? [fileHomeSketch] : (map['file_home_sketch'] as List<dynamic>?),
       filePickupAuthorization: filePickupAuthorization != null ? [filePickupAuthorization] : (map['file_pickup_authorization'] as List<dynamic>?),
+      avatar: general['avatar'] ?? map['avatar'] ?? '',
     );
   }
 
@@ -600,6 +614,7 @@ class Child {
       fileUtilityBill: values['file_utility_bill'] as List<dynamic>?,
       fileHomeSketch: values['file_home_sketch'] as List<dynamic>?,
       filePickupAuthorization: values['file_pickup_authorization'] as List<dynamic>?,
+      avatar: values['avatar'] ?? '',
     );
   }
 
@@ -655,6 +670,7 @@ class Child {
       'file_utility_bill': fileUtilityBill,
       'file_home_sketch': fileHomeSketch,
       'file_pickup_authorization': filePickupAuthorization,
+      'avatar': avatar,
     };
   }
 
@@ -727,6 +743,7 @@ class Child {
       'file_utility_bill': _filterFilesForForm(fileUtilityBill),
       'file_home_sketch': _filterFilesForForm(fileHomeSketch),
       'file_pickup_authorization': _filterFilesForForm(filePickupAuthorization),
+      'avatar': avatar,
     };
   }
 }
