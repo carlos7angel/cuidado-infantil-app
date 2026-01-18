@@ -194,37 +194,6 @@ class _IncidentReportFormScreenState extends State<IncidentReportFormScreen> {
                     ),
                     SizedBox(height: 20.h),
 
-                    // Nivel de severidad
-                    LabelForm(text: 'Nivel de Severidad: *'),
-                    FormBuilderRadioGroup<String>(
-                      name: 'severity_level',
-                      orientation: OptionsOrientation.vertical,
-                      validator: FormBuilderValidators.required(errorText: 'Campo requerido'),
-                      options: [
-                        FormBuilderFieldOption(
-                          value: 'leve',
-                          child: _buildSeverityOption(context, 'Leve', Colors.green, Icons.info_outline),
-                        ),
-                        FormBuilderFieldOption(
-                          value: 'moderado',
-                          child: _buildSeverityOption(context, 'Moderado', Colors.orange, Icons.warning_amber_rounded),
-                        ),
-                        FormBuilderFieldOption(
-                          value: 'grave',
-                          child: _buildSeverityOption(context, 'Grave', Colors.red, Icons.error_outline),
-                        ),
-                        FormBuilderFieldOption(
-                          value: 'critico',
-                          child: _buildSeverityOption(context, 'Crítico', Colors.red.shade900, Icons.dangerous),
-                        ),
-                      ],
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                        border: InputBorder.none,
-                      ),
-                    ),
-                    SizedBox(height: 20.h),
-
                     // Descripción
                     LabelForm(text: 'Descripción: *'),
                     FormFieldShadow(
@@ -321,7 +290,7 @@ class _IncidentReportFormScreenState extends State<IncidentReportFormScreen> {
                         ]),
                         decoration: FormInputDecoration(
                           context: context,
-                          placeholder: 'Ej: Niño y sus amiguitos',
+                          placeholder: 'Ej: Otros niños',
                         ),
                       ),
                     ),
@@ -412,46 +381,6 @@ class _IncidentReportFormScreenState extends State<IncidentReportFormScreen> {
                               builder: (controller) {
                                 return Column(
                                   children: [
-                                    // Mostrar archivos seleccionados
-                                    if (controller.evidenceFiles.isNotEmpty)
-                                      ...controller.evidenceFiles.asMap().entries.map((entry) {
-                                        final index = entry.key;
-                                        final file = entry.value;
-                                        return Container(
-                                          margin: EdgeInsets.only(bottom: 10.h),
-                                          padding: EdgeInsets.all(12.w),
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(8.r),
-                                            border: Border.all(
-                                              color: Theme.of(context).colorScheme.secondary.withOpacity(0.3),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.image,
-                                                color: Theme.of(context).colorScheme.secondary,
-                                                size: 24.sp,
-                                              ),
-                                              SizedBox(width: 10.w),
-                                              Expanded(
-                                                child: Text(
-                                                  file.name,
-                                                  style: Theme.of(context).textTheme.bodySmall,
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                              IconButton(
-                                                icon: Icon(Icons.delete, color: Colors.red),
-                                                onPressed: () => controller.removeEvidenceFile(index),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      }),
-                                    
                                     // Botón para agregar archivos
                                     FormFieldShadow(
                                       child: FormBuilderFilePicker(
@@ -485,6 +414,8 @@ class _IncidentReportFormScreenState extends State<IncidentReportFormScreen> {
                                           ),
                                         ],
                                         onChanged: (value) {
+                                          // Limpiar archivos previos y agregar todos los nuevos
+                                          controller.clearEvidenceFiles();
                                           if (value != null) {
                                             for (var file in value) {
                                               controller.addEvidenceFile(file);
@@ -516,6 +447,24 @@ class _IncidentReportFormScreenState extends State<IncidentReportFormScreen> {
                         decoration: FormInputDecoration(
                           context: context,
                           placeholder: 'Describe las acciones que se tomaron...',
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+
+                    // Reportado a
+                    LabelForm(text: 'Reportado a:'),
+                    FormFieldShadow(
+                      child: FormBuilderTextField(
+                        name: 'escalated_to',
+                        style: Theme.of(context).textTheme.bodySmall,
+                        maxLines: 1,
+                        autovalidateMode: controller.hasAttemptedSave
+                            ? AutovalidateMode.onUserInteraction
+                            : AutovalidateMode.disabled,
+                        decoration: FormInputDecoration(
+                          context: context,
+                          placeholder: 'Indique a quién se reportó el incidente...',
                         ),
                       ),
                     ),
@@ -606,43 +555,5 @@ class _IncidentReportFormScreenState extends State<IncidentReportFormScreen> {
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
-  Widget _buildSeverityOption(BuildContext context, String label, Color color, IconData icon) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 10.h),
-      padding: EdgeInsets.all(12.w),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1.5,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 20.sp,
-            ),
-          ),
-          SizedBox(width: 12.w),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: color,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
 

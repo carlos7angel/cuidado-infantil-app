@@ -204,12 +204,12 @@ class IncidentReportFormController extends GetxController {
     print('📋 DEBUG: Datos del formulario:');
     print('  - child_id: ${_selectedChild!.id}');
     print('  - type: ${formData['type']}');
-    print('  - severity_level: ${formData['severity_level']}');
     print('  - description: ${formData['description']}');
     print('  - incident_date: ${formData['incident_date']}');
     print('  - incident_time: ${formData['incident_time']}');
     print('  - incident_location: ${formData['incident_location']}');
     print('  - people_involved: ${formData['people_involved']}');
+    print('  - escalated_to: ${formData['escalated_to']}');
     print('  - evidence_files count: ${_evidenceFiles.length}');
 
     _isSaving = true;
@@ -256,7 +256,6 @@ class IncidentReportFormController extends GetxController {
       final request = CreateIncidentReportRequest(
         childId: _selectedChild!.id!,
         type: formData['type'] as String,
-        severityLevel: formData['severity_level'] as String,
         description: formData['description'] as String,
         incidentDate: incidentDateStr,
         incidentTime: incidentTimeStr,
@@ -266,6 +265,7 @@ class IncidentReportFormController extends GetxController {
         hasEvidence: _hasEvidence,
         evidenceDescription: _hasEvidence ? formData['evidence_description']?.toString() : null,
         actionsTaken: formData['actions_taken']?.toString(),
+        escalatedTo: formData['escalated_to']?.toString(),
         additionalComments: formData['additional_comments']?.toString(),
         evidenceFiles: _hasEvidence && _evidenceFiles.isNotEmpty ? _evidenceFiles : null,
       );
@@ -360,14 +360,14 @@ class IncidentReportFormController extends GetxController {
       customDialog.hide();
     }
     
-    // Esperar un momento antes de mostrar el modal de éxito
-    Future.delayed(Duration(milliseconds: 300), () {
+    // Mostrar el modal de éxito en el próximo frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       final context = Get.overlayContext;
       if (context == null) {
         print('❌ ERROR: No se pudo obtener overlayContext para el modal de éxito');
         return;
       }
-      
+
       NDialog dialog = NDialog(
         title: Text(
           "Reporte creado",

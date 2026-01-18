@@ -3,6 +3,7 @@ import 'package:cuidado_infantil/Config/models/response_request.dart';
 import 'package:cuidado_infantil/Config/services/api_service.dart';
 import 'package:cuidado_infantil/Config/services/storage_service.dart';
 import 'package:cuidado_infantil/Incident/models/create_incident_report_request.dart';
+import 'package:cuidado_infantil/Incident/models/update_incident_report_request.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -64,7 +65,6 @@ class IncidentReportService {
     Map<String, dynamic> formDataMap = {
       'child_id': request.childId,
       'type': request.type,
-      'severity_level': request.severityLevel,
       'description': request.description,
       'incident_date': request.incidentDate,
       'incident_time': request.incidentTime,
@@ -74,6 +74,7 @@ class IncidentReportService {
       'has_evidence': request.hasEvidence ? '1' : '0',
       'evidence_description': request.evidenceDescription,
       'actions_taken': request.actionsTaken,
+      'escalated_to': request.escalatedTo,
       'additional_comments': request.additionalComments,
     };
 
@@ -96,6 +97,23 @@ class IncidentReportService {
     final response = await _api.post(
       '/incident-reports',
       data: formData,
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    return response;
+  }
+
+  Future<ResponseRequest> updateIncidentReport({
+    required String incidentReportId,
+    required UpdateIncidentReportRequest request,
+  }) async {
+    final token = StorageService.instance.getSession()?.accessToken;
+
+    final response = await _api.put(
+      '/incident-reports/$incidentReportId',
+      data: request.toJson(),
       headers: {
         'Authorization': 'Bearer $token',
       },

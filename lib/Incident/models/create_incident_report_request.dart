@@ -3,7 +3,6 @@ import 'package:file_picker/file_picker.dart';
 class CreateIncidentReportRequest {
   final String childId;
   final String type;
-  final String severityLevel;
   final String description;
   final String incidentDate;
   final String incidentTime;
@@ -13,13 +12,13 @@ class CreateIncidentReportRequest {
   final bool hasEvidence;
   final String? evidenceDescription;
   final String? actionsTaken;
+  final String? escalatedTo;
   final String? additionalComments;
   final List<PlatformFile>? evidenceFiles;
 
   CreateIncidentReportRequest({
     required this.childId,
     required this.type,
-    required this.severityLevel,
     required this.description,
     required this.incidentDate,
     required this.incidentTime,
@@ -29,6 +28,7 @@ class CreateIncidentReportRequest {
     this.hasEvidence = false,
     this.evidenceDescription,
     this.actionsTaken,
+    this.escalatedTo,
     this.additionalComments,
     this.evidenceFiles,
   });
@@ -37,7 +37,6 @@ class CreateIncidentReportRequest {
     return {
       'child_id': childId,
       'type': type,
-      'severity_level': severityLevel,
       'description': description,
       'incident_date': incidentDate,
       'incident_time': incidentTime,
@@ -47,6 +46,7 @@ class CreateIncidentReportRequest {
       'has_evidence': hasEvidence,
       'evidence_description': evidenceDescription,
       'actions_taken': actionsTaken,
+      'escalated_to': escalatedTo,
       'additional_comments': additionalComments,
     };
   }

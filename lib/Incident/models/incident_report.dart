@@ -28,7 +28,10 @@ class IncidentReport {
   final List<String>? evidenceFileIds;
   final int? evidenceFilesCount;
   final String? actionsTaken;
+  final String? escalatedTo;
   final String? additionalComments;
+  final String? followUpNotes;
+  final String? authorityNotificationDetails;
   final bool isActive;
   final String? reportedAt;
   final String? reportedAtReadable;
@@ -67,7 +70,10 @@ class IncidentReport {
     this.evidenceFileIds,
     this.evidenceFilesCount,
     this.actionsTaken,
+    this.escalatedTo,
     this.additionalComments,
+    this.followUpNotes,
+    this.authorityNotificationDetails,
     this.isActive = true,
     this.reportedAt,
     this.reportedAtReadable,
@@ -153,11 +159,14 @@ class IncidentReport {
       hasEvidence: json['has_evidence'] == true,
       evidenceDescription: json['evidence_description']?.toString(),
       evidenceFileIds: evidenceFileIds,
-      evidenceFilesCount: json['evidence_files_count'] is int 
-          ? json['evidence_files_count'] 
+      evidenceFilesCount: json['evidence_files_count'] is int
+          ? json['evidence_files_count']
           : (json['evidence_files_count'] != null ? int.tryParse(json['evidence_files_count'].toString()) : null),
       actionsTaken: json['actions_taken']?.toString(),
+      escalatedTo: json['escalated_to']?.toString(),
       additionalComments: json['additional_comments']?.toString(),
+      followUpNotes: json['follow_up_notes']?.toString(),
+      authorityNotificationDetails: json['authority_notification_details']?.toString(),
       isActive: json['is_active'] != false,
       reportedAt: json['reported_at']?.toString(),
       reportedAtReadable: json['reported_at_readable']?.toString(),
@@ -198,7 +207,10 @@ class IncidentReport {
       'evidence_file_ids': evidenceFileIds,
       'evidence_files_count': evidenceFilesCount,
       'actions_taken': actionsTaken,
+      'escalated_to': escalatedTo,
       'additional_comments': additionalComments,
+      'follow_up_notes': followUpNotes,
+      'authority_notification_details': authorityNotificationDetails,
       'is_active': isActive,
       'reported_at': reportedAt,
       'reported_at_readable': reportedAtReadable,

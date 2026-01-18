@@ -24,6 +24,7 @@ import 'package:cuidado_infantil/Monitoring/ui/screens/monitoring_development_li
 import 'package:cuidado_infantil/Incident/ui/screens/incident_report_list_screen.dart';
 import 'package:cuidado_infantil/Incident/ui/screens/incident_report_form_screen.dart';
 import 'package:cuidado_infantil/Incident/ui/screens/incident_report_details_screen.dart';
+import 'package:cuidado_infantil/Incident/ui/screens/incident_report_edit_screen.dart';
 import 'package:cuidado_infantil/Monitoring/ui/screens/monitoring_nutrition_list_screen.dart';
 import 'package:cuidado_infantil/Monitoring/ui/screens/monitoring_vaccination_tracking_screen.dart';
 import 'package:cuidado_infantil/User/ui/screens/preferences_screen.dart';
@@ -69,6 +70,7 @@ class AppPages {
     GetPage(name: IncidentReportListScreen.routeName, page: () => IncidentReportListScreen()),
     GetPage(name: IncidentReportFormScreen.routeName, page: () => IncidentReportFormScreen()),
     GetPage(name: IncidentReportDetailsScreen.routeName, page: () => IncidentReportDetailsScreen()),
+    GetPage(name: IncidentReportEditScreen.routeName, page: () => IncidentReportEditScreen()),
     GetPage(name: AboutScreen.routeName, page: () => AboutScreen()),
   ];
 }

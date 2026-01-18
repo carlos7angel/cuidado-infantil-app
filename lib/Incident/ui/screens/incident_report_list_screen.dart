@@ -352,21 +352,23 @@ class _IncidentReportListScreenState extends State<IncidentReportListScreen> {
                                             ),
                                           ),
                                         ),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                                          decoration: BoxDecoration(
-                                            color: severityColor.withOpacity(0.2),
-                                            borderRadius: BorderRadius.circular(12.r),
-                                          ),
-                                          child: Text(
-                                            report.severityLabel ?? 'N/A',
-                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                              color: severityColor,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 10.sp,
+                                        if (report.severityLevel != null) ...[
+                                          Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                            decoration: BoxDecoration(
+                                              color: severityColor.withOpacity(0.2),
+                                              borderRadius: BorderRadius.circular(12.r),
+                                            ),
+                                            child: Text(
+                                              report.severityLabel ?? 'N/A',
+                                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                color: severityColor,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 10.sp,
+                                              ),
                                             ),
                                           ),
-                                        ),
+                                        ],
                                       ],
                                     ),
                                     SizedBox(height: 4.h),

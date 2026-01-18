@@ -19,8 +19,8 @@ class ApiService {
   factory ApiService() => _instance;
 
   final Dio dioRaw = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 1000),
-    receiveTimeout: const Duration(seconds: 1000),
+    connectTimeout: const Duration(seconds: 30),  // Reducido de 1000 a 30 segundos
+    receiveTimeout: const Duration(seconds: 30),  // Reducido de 1000 a 30 segundos
     contentType: Headers.jsonContentType,
     headers: {Headers.acceptHeader: Headers.jsonContentType},
   ))..httpClientAdapter = IOHttpClientAdapter(
@@ -54,59 +54,97 @@ class ApiService {
 
   /// Construye la URL base completa desde un Server object
   String _buildBaseUrl(Server server) {
+    print('🏗️ DEBUG: _buildBaseUrl - Construyendo URL base:');
+    print('  - server.host: ${server.host}');
+    print('  - server.apiVersion: ${server.apiVersion}');
+
+    String baseUrl;
     if (server.apiVersion != null && server.apiVersion!.isNotEmpty) {
-      return '${server.host}/${server.apiVersion}';
+      baseUrl = '${server.host}/${server.apiVersion}';
+    } else {
+      baseUrl = server.host!;
     }
-    return server.host!;
+
+    print('  - URL base resultante: $baseUrl');
+    return baseUrl;
   }
 
   /// Inicializa la configuración leyendo del storage (solo lectura)
   void init() {
+    print('🚀 DEBUG: ApiService.init - Inicializando ApiService...');
+
     final Server? server = StorageService.instance.getServer();
+    print('💾 DEBUG: Servidor cargado del storage:');
+    print('  - Server object: $server');
+    print('  - Host: ${server?.host}');
+    print('  - ApiVersion: ${server?.apiVersion}');
+
     String baseUrl = '';
 
     if (server?.host != null) {
       baseUrl = _buildBaseUrl(server!);
+      print('✅ DEBUG: Base URL configurada: $baseUrl');
+    } else {
+      print('⚠️ DEBUG: No hay servidor configurado en storage');
     }
 
     dio = Dio(BaseOptions(
       baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 1000),
-      receiveTimeout: const Duration(seconds: 1000),
+      connectTimeout: const Duration(seconds: 30),  // Reducido de 1000 a 30 segundos
+      receiveTimeout: const Duration(seconds: 30),  // Reducido de 1000 a 30 segundos
       contentType: Headers.jsonContentType,
       headers: {Headers.acceptHeader: Headers.jsonContentType},
     ));
     _configureHttpClientAdapter(dio);
-    
+
     // Configurar el token inicial si existe
     final session = StorageService.instance.getSession();
     if (session?.accessToken != null) {
       setAuthToken(session!.accessToken!);
+      print('🔑 DEBUG: Token de acceso configurado');
+    } else {
+      print('⚠️ DEBUG: No hay token de acceso en storage');
     }
-    
+
     // Agregar el interceptor para manejo automático de tokens y refresh
     // Verificar que no se agregue múltiples veces
     bool hasAuthInterceptor = dio.interceptors.any((interceptor) => interceptor is _AuthInterceptor);
     if (!hasAuthInterceptor) {
       dio.interceptors.add(_AuthInterceptor(this));
+      print('🛡️ DEBUG: AuthInterceptor agregado');
+    } else {
+      print('🛡️ DEBUG: AuthInterceptor ya existe');
     }
+
+    print('✅ DEBUG: ApiService inicializado correctamente');
   }
 
   /// Actualiza la URL base (lectura + escritura)
   void updateBaseUrl(Server server) {
-    dio.options.baseUrl = _buildBaseUrl(server);
-    
+    print('🔄 DEBUG: ApiService.updateBaseUrl - Actualizando URL base');
+    print('  - Nuevo server: host=${server.host}, apiVersion=${server.apiVersion}');
+
+    final newBaseUrl = _buildBaseUrl(server);
+    print('  - Nueva base URL: $newBaseUrl');
+    print('  - URL anterior: ${dio.options.baseUrl}');
+
+    dio.options.baseUrl = newBaseUrl;
+
     // Asegurar que el interceptor esté presente después de actualizar la URL
     bool hasAuthInterceptor = dio.interceptors.any((interceptor) => interceptor is _AuthInterceptor);
     if (!hasAuthInterceptor) {
       dio.interceptors.add(_AuthInterceptor(this));
+      print('🛡️ DEBUG: AuthInterceptor agregado después de actualizar URL');
     }
-    
+
     // Restaurar el token si existe después de actualizar la URL
     final session = StorageService.instance.getSession();
     if (session?.accessToken != null) {
       setAuthToken(session!.accessToken!);
+      print('🔑 DEBUG: Token restaurado después de actualizar URL');
     }
+
+    print('✅ DEBUG: URL base actualizada correctamente');
   }
 
   void setAuthToken(String token) {
@@ -138,6 +176,12 @@ class ApiService {
     dynamic data,
     Map<String, dynamic>? headers,
   }) async {
+    print('📤 DEBUG: ApiService.post - POST request:');
+    print('  - Path: $path');
+    print('  - Full URL: ${dio.options.baseUrl}$path');
+    print('  - Data: $data');
+    print('  - Headers: $headers');
+
     return _handleRequest(() => dio.post(
       path,
       data: data,
@@ -173,7 +217,13 @@ class ApiService {
 
   /// GET request to raw url
   Future<ResponseRequest> getRaw(String fullUrl) async {
-    return _handleRequest(() => dioRaw.get(fullUrl));
+    print('🌐 DEBUG: ApiService.getRaw - Iniciando petición a: $fullUrl');
+    print('⏱️  DEBUG: Timeout configurado: connectTimeout=${dioRaw.options.connectTimeout}, receiveTimeout=${dioRaw.options.receiveTimeout}');
+
+    final response = await _handleRequest(() => dioRaw.get(fullUrl));
+
+    print('📨 DEBUG: ApiService.getRaw - Respuesta recibida: success=${response.success}, statusCode=${response.statusCode}');
+    return response;
   }
 
   /// Expone dioRaw para uso en métodos específicos como refreshToken
@@ -182,8 +232,14 @@ class ApiService {
   Future<ResponseRequest> _handleRequest(Future<dio_lib.Response> Function() request) async {
     ResponseRequest responseRequest = ResponseRequest();
     try {
+      print('🔄 DEBUG: ApiService._handleRequest - Ejecutando petición...');
       dio_lib.Response response = await request();
-      
+
+      print('📨 DEBUG: ApiService._handleRequest - Respuesta HTTP recibida:');
+      print('  - Status Code: ${response.statusCode}');
+      print('  - Headers: ${response.headers}');
+      print('  - Data: ${response.data}');
+
       responseRequest.statusCode = response.statusCode ?? 0;
 
       if (response.statusCode == 200 || response.statusCode == 201 || response.statusCode == 204) {
@@ -195,6 +251,7 @@ class ApiService {
           responseRequest.data = response.data is Map ? response.data : {'data': response.data};
         }
         responseRequest.message = 'Success';  // Asignar mensaje de éxito
+        print('✅ DEBUG: ApiService._handleRequest - Respuesta exitosa');
       } else {
         responseRequest.success = false;
         final data = response.data;
@@ -203,12 +260,23 @@ class ApiService {
         } else {
           responseRequest.message = 'Error en la solicitud';
         }
+        print('⚠️  DEBUG: ApiService._handleRequest - Respuesta con error de servidor');
       }
     } on DioException catch (e) {
+      print('❌ DEBUG: ApiService._handleRequest - DioException capturada:');
+      print('  - Type: ${e.type}');
+      print('  - Message: ${e.message}');
+      print('  - Response Status: ${e.response?.statusCode}');
+      print('  - Response Data: ${e.response?.data}');
+
       responseRequest.success = false;
       responseRequest.statusCode = e.response?.statusCode ?? 0;
       responseRequest.message = _handleDioError(e);
     } catch (e) {
+      print('💥 DEBUG: ApiService._handleRequest - Error inesperado:');
+      print('  - Error: $e');
+      print('  - Runtime Type: ${e.runtimeType}');
+
       responseRequest.success = false;
       responseRequest.statusCode = 0;
       responseRequest.message = 'Error inesperado: ${e.toString()}';

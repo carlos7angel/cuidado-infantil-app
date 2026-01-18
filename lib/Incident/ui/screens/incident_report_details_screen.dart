@@ -108,67 +108,17 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
                       SizedBox(height: 20.h),
                     ],
 
-                    // Información del reporte
+                    // Información del reporte (Código, Tipo, Fecha y Hora, Reportado el)
                     _buildReportInfoCard(context, report, severityColor, statusColor),
 
                     SizedBox(height: 20.h),
 
-                    // Descripción
-                    if (report.description != null && report.description!.isNotEmpty) ...[
-                      _buildSectionTitle(context, 'Descripción'),
-                      SizedBox(height: 10.h),
-                      _buildDescriptionCard(context, report.description!),
-                      SizedBox(height: 20.h),
-                    ],
-
-                    // Detalles del incidente
-                    _buildSectionTitle(context, 'Detalles del Incidente'),
-                    SizedBox(height: 10.h),
-                    _buildIncidentDetailsCard(context, report),
+                    // Contenido unificado (desde Descripción hasta Descripción de Evidencia)
+                    _buildUnifiedContentCard(context, report),
 
                     SizedBox(height: 20.h),
 
-                    // Personas involucradas
-                    if (report.peopleInvolved != null && report.peopleInvolved!.isNotEmpty) ...[
-                      _buildSectionTitle(context, 'Personas Involucradas'),
-                      SizedBox(height: 10.h),
-                      _buildInfoCard(context, report.peopleInvolved!),
-                      SizedBox(height: 20.h),
-                    ],
-
-                    // Testigos
-                    if (report.witnesses != null && report.witnesses!.isNotEmpty) ...[
-                      _buildSectionTitle(context, 'Testigos'),
-                      SizedBox(height: 10.h),
-                      _buildInfoCard(context, report.witnesses!),
-                      SizedBox(height: 20.h),
-                    ],
-
-                    // Acciones tomadas
-                    if (report.actionsTaken != null && report.actionsTaken!.isNotEmpty) ...[
-                      _buildSectionTitle(context, 'Acciones Tomadas'),
-                      SizedBox(height: 10.h),
-                      _buildInfoCard(context, report.actionsTaken!),
-                      SizedBox(height: 20.h),
-                    ],
-
-                    // Comentarios adicionales
-                    if (report.additionalComments != null && report.additionalComments!.isNotEmpty) ...[
-                      _buildSectionTitle(context, 'Comentarios Adicionales'),
-                      SizedBox(height: 10.h),
-                      _buildInfoCard(context, report.additionalComments!),
-                      SizedBox(height: 20.h),
-                    ],
-
-                    // Descripción de evidencia
-                    if (report.evidenceDescription != null && report.evidenceDescription!.isNotEmpty) ...[
-                      _buildSectionTitle(context, 'Descripción de la Evidencia'),
-                      SizedBox(height: 10.h),
-                      _buildInfoCard(context, report.evidenceDescription!),
-                      SizedBox(height: 20.h),
-                    ],
-
-                    // Archivos de evidencia
+                    // Archivos de evidencia (mantener separados)
                     if (report.evidenceFiles != null && report.evidenceFiles!.isNotEmpty) ...[
                       _buildSectionTitle(context, 'Archivos de Evidencia'),
                       SizedBox(height: 10.h),
@@ -176,10 +126,13 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
                       SizedBox(height: 20.h),
                     ],
 
-                    // Información de registro
-                    _buildSectionTitle(context, 'Información de Registro'),
-                    SizedBox(height: 10.h),
-                    _buildRegistrationInfoCard(context, report),
+                    // Card de seguimiento (al final, solo si hay contenido)
+                    if (_hasFollowUpContent(report)) ...[
+                      _buildSectionTitle(context, 'Seguimiento'),
+                      SizedBox(height: 10.h),
+                      _buildFollowUpCard(context, report),
+                      SizedBox(height: 20.h),
+                    ],
 
                     SizedBox(height: 20.h),
                   ],
@@ -187,6 +140,16 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
               ),
             ),
           ),
+          floatingActionButton: controller.incidentReport != null ? FloatingActionButton(
+            onPressed: () => Get.toNamed(
+              '/incident_report_edit',
+              arguments: controller.incidentReport,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            shape: StadiumBorder(side: BorderSide(width: 0, color: Theme.of(context).colorScheme.secondary.withOpacity(0))),
+            tooltip: 'Editar reporte',
+            child: Icon(Icons.edit, color: Colors.white),
+          ) : null,
         );
       },
     );
@@ -211,22 +174,24 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
         children: [
           Row(
             children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                decoration: BoxDecoration(
-                  color: severityColor.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(20.r),
-                ),
-                child: Text(
-                  report.severityLabel ?? 'N/A',
-                  style: TextStyle(
-                    color: severityColor,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12.sp,
+              if (report.severityLevel != null) ...[
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  decoration: BoxDecoration(
+                    color: severityColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20.r),
+                  ),
+                  child: Text(
+                    report.severityLabel ?? 'N/A',
+                    style: TextStyle(
+                      color: severityColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12.sp,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(width: 10.w),
+                SizedBox(width: 10.w),
+              ],
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
@@ -248,6 +213,13 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
           _buildInfoRow(context, 'Código', report.code ?? 'N/A'),
           SizedBox(height: 10.h),
           _buildInfoRow(context, 'Tipo', report.typeLabel ?? 'N/A'),
+          SizedBox(height: 10.h),
+          if (report.incidentDateTimeReadable != null)
+            _buildInfoRow(context, 'Fecha y Hora', report.incidentDateTimeReadable!),
+          if (report.reportedAtReadable != null) ...[
+            SizedBox(height: 10.h),
+            _buildInfoRow(context, 'Reportado el', report.reportedAtReadable!),
+          ],
         ],
       ),
     );
@@ -263,36 +235,16 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
     );
   }
 
-  Widget _buildDescriptionCard(BuildContext context, String description) {
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
-        borderRadius: BorderRadius.circular(10.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black45.withOpacity(0.15),
-            offset: Offset(2.0, 4.0),
-            blurRadius: 8,
-          )
-        ],
-      ),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: double.infinity),
-          child: Text(
-            description,
-            style: Theme.of(context).textTheme.bodyMedium,
-            textAlign: TextAlign.left,
-          ),
-        ),
-      ),
-    );
+  bool _hasFollowUpContent(report) {
+    return (report.actionsTaken != null && report.actionsTaken!.isNotEmpty) ||
+           (report.additionalComments != null && report.additionalComments!.isNotEmpty) ||
+           (report.followUpNotes != null && report.followUpNotes!.isNotEmpty) ||
+           (report.authorityNotificationDetails != null && report.authorityNotificationDetails!.isNotEmpty);
   }
 
-  Widget _buildIncidentDetailsCard(BuildContext context, report) {
+  Widget _buildFollowUpCard(BuildContext context, report) {
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
@@ -306,19 +258,38 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (report.incidentDateTimeReadable != null)
-            _buildInfoRow(context, 'Fecha y Hora', report.incidentDateTimeReadable!),
-          if (report.incidentDateTimeReadable != null) SizedBox(height: 15.h),
-          if (report.incidentLocation != null && report.incidentLocation!.isNotEmpty)
-            _buildInfoRow(context, 'Ubicación', report.incidentLocation!),
+          // Acciones tomadas
+          if (report.actionsTaken != null && report.actionsTaken!.isNotEmpty) ...[
+            _buildUnifiedSection(context, 'Acciones Tomadas', report.actionsTaken!),
+            SizedBox(height: 20.h),
+          ],
+
+          // Comentarios adicionales
+          if (report.additionalComments != null && report.additionalComments!.isNotEmpty) ...[
+            _buildUnifiedSection(context, 'Comentarios Adicionales', report.additionalComments!),
+            SizedBox(height: 20.h),
+          ],
+
+          // Seguimiento
+          if (report.followUpNotes != null && report.followUpNotes!.isNotEmpty) ...[
+            _buildUnifiedSection(context, 'Seguimiento', report.followUpNotes!),
+            SizedBox(height: 20.h),
+          ],
+
+          // Notificación a autoridades
+          if (report.authorityNotificationDetails != null && report.authorityNotificationDetails!.isNotEmpty) ...[
+            _buildUnifiedSection(context, 'Notificación a Autoridades', report.authorityNotificationDetails!),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildInfoCard(BuildContext context, String info) {
+  Widget _buildUnifiedContentCard(BuildContext context, report) {
     return Container(
+      width: double.infinity,
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
@@ -331,19 +302,75 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
           )
         ],
       ),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: double.infinity),
-          child: Text(
-            info,
-            style: Theme.of(context).textTheme.bodyMedium,
-            textAlign: TextAlign.left,
-          ),
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Descripción
+          if (report.description != null && report.description!.isNotEmpty) ...[
+            _buildUnifiedSection(context, 'Descripción', report.description!),
+            SizedBox(height: 20.h),
+          ],
+
+          // Ubicación del incidente
+          if (report.incidentLocation != null && report.incidentLocation!.isNotEmpty) ...[
+            _buildUnifiedSection(context, 'Ubicación del Incidente', report.incidentLocation!),
+            SizedBox(height: 20.h),
+          ],
+
+          // Personas involucradas
+          if (report.peopleInvolved != null && report.peopleInvolved!.isNotEmpty) ...[
+            _buildUnifiedSection(context, 'Personas Involucradas', report.peopleInvolved!),
+            SizedBox(height: 20.h),
+          ],
+
+          // Testigos
+          if (report.witnesses != null && report.witnesses!.isNotEmpty) ...[
+            _buildUnifiedSection(context, 'Testigos', report.witnesses!),
+            SizedBox(height: 20.h),
+          ],
+
+          // Reportado a
+          if (report.escalatedTo != null && report.escalatedTo!.isNotEmpty) ...[
+            _buildUnifiedSection(context, 'Reportado a', report.escalatedTo!),
+            SizedBox(height: 20.h),
+          ],
+
+          // Descripción de evidencia
+          if (report.evidenceDescription != null && report.evidenceDescription!.isNotEmpty) ...[
+            _buildUnifiedSection(context, 'Descripción de la Evidencia', report.evidenceDescription!),
+          ],
+        ],
       ),
     );
   }
+
+  Widget _buildUnifiedSection(BuildContext context, String title, String content) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 14.sp,
+          ),
+        ),
+        SizedBox(height: 8.h),
+        Text(
+          content,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w400,
+            color: Theme.of(context).textTheme.bodyMedium?.color,
+            height: 1.5,
+          ),
+          textAlign: TextAlign.left,
+        ),
+      ],
+    );
+  }
+
+
+
 
   Widget _buildEvidenceFilesCard(BuildContext context, List<EvidenceFile> files) {
     return Container(
@@ -374,14 +401,15 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
         borderRadius: BorderRadius.circular(10.r),
         child: CachedNetworkImage(
           imageUrl: file.url!,
+          height: 150.h,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
-            height: 200.h,
+            height: 150.h,
             color: Colors.grey[300],
             child: Center(child: CircularProgressIndicator()),
           ),
           errorWidget: (context, url, error) => Container(
-            height: 200.h,
+            height: 150.h,
             color: Colors.grey[300],
             child: Icon(Icons.error),
           ),
@@ -397,33 +425,34 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
         final file = files[index];
         if (file.url == null) return SizedBox.shrink();
 
-        return GestureDetector(
-          onTap: () => _showImageDialog(context, file.url!, index, files),
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 5.w),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10.r),
-              child: CachedNetworkImage(
-                imageUrl: file.url!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                placeholder: (context, url) => Container(
-                  height: 200.h,
-                  color: Colors.grey[300],
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  height: 200.h,
-                  color: Colors.grey[300],
-                  child: Icon(Icons.error),
+          return GestureDetector(
+            onTap: () => _showImageDialog(context, file.url!, index, files),
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 5.w),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10.r),
+                child: CachedNetworkImage(
+                  imageUrl: file.url!,
+                  height: 100.h,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  placeholder: (context, url) => Container(
+                    height: 100.h,
+                    color: Colors.grey[300],
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    height: 100.h,
+                    color: Colors.grey[300],
+                    child: Icon(Icons.error),
+                  ),
                 ),
               ),
             ),
-          ),
-        );
+          );
       },
       options: CarouselOptions(
-        height: 200.h,
+        height: 100.h,
         viewportFraction: 0.8,
         enlargeCenterPage: true,
         autoPlay: false,
@@ -469,31 +498,6 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
     );
   }
 
-  Widget _buildRegistrationInfoCard(BuildContext context, report) {
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
-        borderRadius: BorderRadius.circular(10.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black45.withOpacity(0.15),
-            offset: Offset(2.0, 4.0),
-            blurRadius: 8,
-          )
-        ],
-      ),
-      child: Column(
-        children: [
-          if (report.reportedAtReadable != null)
-            _buildInfoRow(context, 'Reportado el', report.reportedAtReadable!),
-          if (report.reportedAtReadable != null) SizedBox(height: 15.h),
-          if (report.closedDate != null)
-            _buildInfoRow(context, 'Cerrado el', report.closedDate!),
-        ],
-      ),
-    );
-  }
 
   Widget _buildInfoRow(BuildContext context, String label, String value) {
     return Row(
