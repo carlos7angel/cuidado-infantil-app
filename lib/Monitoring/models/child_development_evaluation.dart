@@ -72,6 +72,7 @@ class ChildDevelopmentEvaluation {
   final String? overallStatus;
   final bool requiresAttention;
   final List<String>? areasRequiringAttention;
+  final String? actionsTaken;
   final String? notes;
   final String? nextEvaluationDate;
   final String? nextEvaluationDateReadable;
@@ -96,6 +97,7 @@ class ChildDevelopmentEvaluation {
     this.overallStatus,
     this.requiresAttention = false,
     this.areasRequiringAttention,
+    this.actionsTaken,
     this.notes,
     this.nextEvaluationDate,
     this.nextEvaluationDateReadable,
@@ -169,6 +171,7 @@ class ChildDevelopmentEvaluation {
       overallStatus: json['overall_status']?.toString(),
       requiresAttention: json['requires_attention'] == true || json['requires_attention'] == 'true',
       areasRequiringAttention: areasRequiringAttention,
+      actionsTaken: json['actions_taken']?.toString(),
       notes: json['notes']?.toString(),
       nextEvaluationDate: json['next_evaluation_date']?.toString(),
       nextEvaluationDateReadable: json['next_evaluation_date_readable']?.toString(),
@@ -206,6 +209,7 @@ class ChildDevelopmentEvaluation {
       'overall_status': overallStatus,
       'requires_attention': requiresAttention,
       'areas_requiring_attention': areasRequiringAttention,
+      'actions_taken': actionsTaken,
       'notes': notes,
       'next_evaluation_date': nextEvaluationDate,
       'next_evaluation_date_readable': nextEvaluationDateReadable,

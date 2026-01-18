@@ -166,6 +166,31 @@ class _MonitoringDevelopmentFormScreenState extends State<MonitoringDevelopmentF
                                 ),
                               ),
                             ),
+                            SizedBox(height: 20.h),
+
+                            LabelForm(text: 'Acciones tomadas:'),
+                            FormFieldShadow(
+                              child: FormBuilderTextField(
+                                name: 'actions_taken',
+                                style: Theme.of(context).textTheme.bodySmall,
+                                maxLines: 4,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                decoration: FormInputDecoration(context: context),
+                              ),
+                            ),
+                            SizedBox(height: 5.h),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Ingrese las acciones tomadas en referencia a la última evaluación.',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).hintColor,
+                                  fontSize: 12.sp,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+
                             SizedBox(height: 30.h),
 
                             // Items de desarrollo agrupados por área

@@ -1,6 +1,7 @@
 import 'package:cuidado_infantil/Config/models/response_request.dart';
 import 'package:cuidado_infantil/Config/services/api_service.dart';
 import 'package:cuidado_infantil/Config/services/storage_service.dart';
+import 'package:cuidado_infantil/Monitoring/models/create_child_development_evaluation_request.dart';
 
 class MonitoringDevelopmentService {
 
@@ -37,18 +38,12 @@ class MonitoringDevelopmentService {
   }
 
   Future<ResponseRequest> createDevelopmentEvaluation({
-    required String childId,
-    required List<String> items,
-    String? notes,
+    required CreateChildDevelopmentEvaluationRequest request,
   }) async {
     final token = StorageService.instance.getSession()?.accessToken;
-    final body = {
-      'items': items,
-      if (notes != null && notes.isNotEmpty) 'notes': notes,
-    };
     final response = await _api.post(
-      '/children/$childId/development-evaluations',
-      data: body,
+      '/children/${request.childId}/development-evaluations',
+      data: request.toJson(),
       headers: {
         'Authorization': 'Bearer $token',
       },

@@ -3,6 +3,7 @@ import 'package:cuidado_infantil/Config/services/storage_service.dart';
 import 'package:cuidado_infantil/Config/widgets/custom_dialog.dart';
 import 'package:cuidado_infantil/Config/widgets/custom_snack_bar.dart';
 import 'package:cuidado_infantil/Monitoring/controllers/monitoring_nutrition_list_controller.dart';
+import 'package:cuidado_infantil/Monitoring/models/create_nutritional_assessment_request.dart';
 import 'package:cuidado_infantil/Monitoring/repositories/monitoring_nutrition_repository.dart';
 import 'package:cuidado_infantil/Monitoring/ui/screens/monitoring_nutrition_list_screen.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ class MonitoringNutritionFormController extends GetxController {
 
   String? _weight;
   String? _height;
+  String? _actions_taken;
+  
 
   /// Calcula la edad en meses desde la fecha de nacimiento
   int? getAgeInMonths() {
@@ -55,6 +58,7 @@ class MonitoringNutritionFormController extends GetxController {
     final formValues = _fbKey.currentState!.value;
     _weight = formValues['weight']?.toString().trim();
     _height = formValues['height']?.toString().trim();
+    _actions_taken = formValues['actions_taken']?.toString().trim();
 
     if (_weight == null || _weight!.isEmpty || _height == null || _height!.isEmpty) {
       customDialog.hide();
@@ -76,10 +80,15 @@ class MonitoringNutritionFormController extends GetxController {
     customDialog.show();
 
     try {
-      final response = await MonitoringNutritionRepository().createEvaluation(
+      final request = CreateNutritionalAssessmentRequest(
         childId: _selectedChild!.id!,
         weight: _weight!,
         height: _height!,
+        actionsTaken: _actions_taken,
+      );
+
+      final response = await MonitoringNutritionRepository().createEvaluation(
+        request: request,
       );
 
       customDialog.hide();

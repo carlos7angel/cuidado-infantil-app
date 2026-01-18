@@ -4,6 +4,7 @@ import 'package:cuidado_infantil/Config/widgets/custom_dialog.dart';
 import 'package:cuidado_infantil/Config/widgets/custom_snack_bar.dart';
 import 'package:cuidado_infantil/Monitoring/controllers/monitoring_development_list_controller.dart';
 import 'package:cuidado_infantil/Monitoring/models/child_development_evaluation.dart';
+import 'package:cuidado_infantil/Monitoring/models/create_child_development_evaluation_request.dart';
 import 'package:cuidado_infantil/Monitoring/models/development_items_response.dart';
 import 'package:cuidado_infantil/Monitoring/repositories/monitoring_development_repository.dart';
 import 'package:cuidado_infantil/Monitoring/ui/screens/monitoring_development_details_screen.dart';
@@ -32,6 +33,7 @@ class MonitoringDevelopmentFormController extends GetxController {
   Map<String, bool> get selectedItems => _selectedItems;
 
   String? _notes;
+  String? _actionsTaken;
 
   /// Calcula la edad en meses desde la fecha de nacimiento
   int? getAgeInMonths() {
@@ -152,11 +154,12 @@ class MonitoringDevelopmentFormController extends GetxController {
       return;
     }
 
-    // Obtener notas del formulario si existe
+    // Obtener notas y acciones tomadas del formulario si existe
     if (_fbKey.currentState != null) {
       _fbKey.currentState!.save();
       final formValues = _fbKey.currentState!.value;
       _notes = formValues['notes']?.toString().trim();
+      _actionsTaken = formValues['actions_taken']?.toString().trim();
     }
 
     if (_selectedChild?.id == null) {
@@ -170,10 +173,15 @@ class MonitoringDevelopmentFormController extends GetxController {
     customDialog.show();
 
     try {
-      final response = await MonitoringDevelopmentRepository().createDevelopmentEvaluation(
+      final request = CreateChildDevelopmentEvaluationRequest(
         childId: _selectedChild!.id!,
         items: selectedItemIds,
         notes: _notes,
+        actionsTaken: _actionsTaken,
+      );
+
+      final response = await MonitoringDevelopmentRepository().createDevelopmentEvaluation(
+        request: request,
       );
 
       // Cerrar el CustomDialog inmediatamente después de recibir la respuesta
@@ -326,6 +334,7 @@ class MonitoringDevelopmentFormController extends GetxController {
   void clearForm() {
     _selectedItems.clear();
     _notes = null;
+    _actionsTaken = null;
     _fbKey.currentState?.reset();
   }
 }

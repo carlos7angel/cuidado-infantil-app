@@ -29,6 +29,7 @@ class NutritionalAssessment {
   final bool requiresAttention;
   final String? criticalStatus;
   final String? criticalStatusLabel;
+  final String? actionsTaken;
   final String? observations;
   final String? recommendations;
   final String? nextAssessmentDate;
@@ -66,6 +67,7 @@ class NutritionalAssessment {
     this.requiresAttention = false,
     this.criticalStatus,
     this.criticalStatusLabel,
+    this.actionsTaken,
     this.observations,
     this.recommendations,
     this.nextAssessmentDate,
@@ -109,6 +111,7 @@ class NutritionalAssessment {
       requiresAttention: json['requires_attention'] == true || json['requires_attention'] == 'true',
       criticalStatus: json['critical_status']?.toString(),
       criticalStatusLabel: json['critical_status_label']?.toString(),
+      actionsTaken: json['actions_taken']?.toString(),
       observations: json['observations']?.toString(),
       recommendations: json['recommendations']?.toString(),
       nextAssessmentDate: json['next_assessment_date']?.toString(),
@@ -149,6 +152,7 @@ class NutritionalAssessment {
       'requires_attention': requiresAttention,
       'critical_status': criticalStatus,
       'critical_status_label': criticalStatusLabel,
+      'actions_taken': actionsTaken,
       'observations': observations,
       'recommendations': recommendations,
       'next_assessment_date': nextAssessmentDate,

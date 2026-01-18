@@ -266,6 +266,32 @@ class _MonitoringNutritionDetailsScreenState extends State<MonitoringNutritionDe
                             ),
                           ),
 
+                          if (controller.assessment!.actionsTaken != null && controller.assessment!.actionsTaken!.isNotEmpty)
+                            Container(
+                              padding: EdgeInsets.symmetric(vertical: 5.h),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Acciones tomadas',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15.sp,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5.h),
+                                  Text(
+                                    controller.assessment!.actionsTaken!,
+                                    textAlign: TextAlign.left,
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w400,
+                                      color: Theme.of(context).hintColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
                         ] else ...[
                           Container(
                             padding: EdgeInsets.symmetric(vertical: 20.h),

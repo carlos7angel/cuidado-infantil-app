@@ -1,6 +1,7 @@
 import 'package:cuidado_infantil/Config/models/response_request.dart';
 import 'package:cuidado_infantil/Config/services/api_service.dart';
 import 'package:cuidado_infantil/Config/services/storage_service.dart';
+import 'package:cuidado_infantil/Monitoring/models/create_nutritional_assessment_request.dart';
 
 class MonitoringNutritionService {
 
@@ -26,17 +27,12 @@ class MonitoringNutritionService {
   }
 
   Future<ResponseRequest> createEvaluation({
-    required String childId,
-    required String weight,
-    required String height,
+    required CreateNutritionalAssessmentRequest request,
   }) async {
     final token = StorageService.instance.getSession()?.accessToken;
     final response = await _api.post(
-      '/children/$childId/nutritional-assessments',
-      data: {
-        'weight': weight,
-        'height': height,
-      },
+      '/children/${request.childId}/nutritional-assessments',
+      data: request.toJson(),
       headers: {
         'Authorization': 'Bearer $token',
       },

@@ -1,4 +1,5 @@
 import 'package:cuidado_infantil/Config/models/response_request.dart';
+import 'package:cuidado_infantil/Monitoring/models/create_child_development_evaluation_request.dart';
 import 'package:cuidado_infantil/Monitoring/services/monitoring_development_service.dart';
 
 class MonitoringDevelopmentRepository {
@@ -10,14 +11,10 @@ class MonitoringDevelopmentRepository {
     await MonitoringDevelopmentService().getDevelopmentItemsByChild(childId: childId);
 
   Future<ResponseRequest> createDevelopmentEvaluation({
-    required String childId,
-    required List<String> items,
-    String? notes,
+    required CreateChildDevelopmentEvaluationRequest request,
   }) async => 
     await MonitoringDevelopmentService().createDevelopmentEvaluation(
-      childId: childId,
-      items: items,
-      notes: notes,
+      request: request,
     );
 
   Future<ResponseRequest> getEvaluationById({required String evaluationId}) async => 

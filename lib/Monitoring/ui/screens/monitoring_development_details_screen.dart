@@ -318,6 +318,32 @@ class _MonitoringDevelopmentDetailsScreenState extends State<MonitoringDevelopme
                             ],
                           ),
                         ),
+
+                      if (evaluation.actionsTaken != null && evaluation.actionsTaken!.isNotEmpty)
+                        Container(
+                          padding: EdgeInsets.symmetric(vertical: 5.h),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Acciones tomadas',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15.sp,
+                                ),
+                              ),
+                              SizedBox(height: 5.h),
+                              Text(
+                                evaluation.actionsTaken!,
+                                textAlign: TextAlign.left,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w400,
+                                  color: Theme.of(context).hintColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
           SizedBox(height: 2.h,),
           // Notas
           if (evaluation.notes != null && evaluation.notes!.isNotEmpty)
