@@ -1,6 +1,14 @@
 const LOCAL_DATABASE_NAME = "cuidadoinfantildb";
 
-/* GLOBAL APP VARIABLES */
+/* SERVER CONFIGURATION
+ * Configuración del servidor para conexión a la API
+ * IMPORTANTE: Estos valores se configuran en tiempo de compilación
+ * Para cambiar el servidor, modificar estos valores antes de compilar la app
+ */
+const SERVER_HOST = "http://192.168.2.102/cuidado-infantil-vmb/public";  // URL base del servidor API
+const SERVER_API_VERSION = "v1";  // Versión de la API
+
+
 const APP_VERSION = "1.0.0";
 const APP_NAME = "Cuidado Activo";
 const APP_DESCRIPTION = APP_NAME + " es una aplicación para el monitoreo y seguimiento del Desarrollo Integral de la Infancia Temprana de los infantes.";

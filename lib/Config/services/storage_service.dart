@@ -26,16 +26,15 @@ class StorageService {
     return value != null ? Session.fromJson(jsonDecode(value)) : null;
   }
 
-  Future<void> remove() async {
+  /// Limpia la sesión del usuario y datos relacionados
+  Future<void> clearUserSession() async {
     await storage.remove('session');
     await storage.remove('user');
-    await storage.remove('server');
     await storage.remove('childcare_center');
     await storage.remove('selected_child');
-    await storage.erase();
   }
 
-  /// Server data ------------------------------------------------------------
+    /// Server data ------------------------------------------------------------
 
   Future<void> setServer(Server server) async {
     await storage.write('server', jsonEncode(server.toJson()));

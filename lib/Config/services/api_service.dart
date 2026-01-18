@@ -4,6 +4,7 @@ import 'package:cuidado_infantil/Auth/models/server_model.dart';
 import 'package:cuidado_infantil/Auth/models/session_model.dart';
 import 'package:cuidado_infantil/Auth/repositories/auth_repository.dart';
 import 'package:cuidado_infantil/Config/controllers/session_controller.dart';
+import 'package:cuidado_infantil/Config/general/env.dart';
 import 'package:cuidado_infantil/Config/models/response_request.dart';
 import 'package:cuidado_infantil/Config/services/storage_service.dart';
 import 'package:dio/dio.dart' hide Response;
@@ -46,6 +47,14 @@ class ApiService {
   }
 
   late Dio dio;
+
+  /// Obtiene la configuración fija del servidor desde env.dart
+  static Server getFixedServerConfig() {
+    return Server(
+      host: SERVER_HOST,
+      apiVersion: SERVER_API_VERSION,
+    );
+  }
   
   // Variable para controlar si se está refrescando el token
   bool _isRefreshing = false;
@@ -69,24 +78,18 @@ class ApiService {
     return baseUrl;
   }
 
-  /// Inicializa la configuración leyendo del storage (solo lectura)
+  /// Inicializa la configuración usando las constantes fijas de env.dart
   void init() {
-    print('🚀 DEBUG: ApiService.init - Inicializando ApiService...');
+    print('🚀 DEBUG: ApiService.init - Inicializando ApiService con configuración fija...');
 
-    final Server? server = StorageService.instance.getServer();
-    print('💾 DEBUG: Servidor cargado del storage:');
-    print('  - Server object: $server');
-    print('  - Host: ${server?.host}');
-    print('  - ApiVersion: ${server?.apiVersion}');
+    final server = getFixedServerConfig();
 
-    String baseUrl = '';
+    print('⚙️ DEBUG: Servidor configurado desde env.dart:');
+    print('  - Host: ${server.host}');
+    print('  - ApiVersion: ${server.apiVersion}');
 
-    if (server?.host != null) {
-      baseUrl = _buildBaseUrl(server!);
+    String baseUrl = _buildBaseUrl(server);
       print('✅ DEBUG: Base URL configurada: $baseUrl');
-    } else {
-      print('⚠️ DEBUG: No hay servidor configurado en storage');
-    }
 
     dio = Dio(BaseOptions(
       baseUrl: baseUrl,
@@ -360,7 +363,7 @@ class ApiService {
   /// Maneja el fallo del refresh token
   void _handleRefreshFailure() {
     // Limpiar sesión
-    StorageService.instance.remove();
+    StorageService.instance.clearUserSession();
     clearAuthToken();
     
     // Limpiar SessionController si existe
@@ -544,7 +547,7 @@ class _AuthInterceptor extends Interceptor {
   /// Redirige al login cuando no se puede refrescar el token
   void _redirectToLogin() {
     // Limpiar datos de sesión
-    StorageService.instance.remove();
+    StorageService.instance.clearUserSession();
     apiService.clearAuthToken();
     
     // Limpiar SessionController si existe

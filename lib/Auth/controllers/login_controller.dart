@@ -1,7 +1,7 @@
 import 'package:cuidado_infantil/Auth/models/login_model.dart';
 import 'package:cuidado_infantil/Auth/models/server_model.dart';
 import 'package:cuidado_infantil/Auth/repositories/auth_repository.dart';
-import 'package:cuidado_infantil/Auth/ui/screens/server_screen.dart';
+import 'package:cuidado_infantil/Auth/ui/screens/login_screen.dart';
 import 'package:cuidado_infantil/Config/controllers/session_controller.dart';
 import 'package:cuidado_infantil/Config/models/response_request.dart';
 import 'package:cuidado_infantil/Config/services/api_service.dart';
@@ -29,18 +29,15 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     _loginModel = LoginModel();
-    server = StorageService.instance.getServer();
     super.onInit();
   }
 
   @override
   void onReady() {
     super.onReady();
-    if(server == null || server?.host == null) {
-      CustomSnackBar(context: Get.overlayContext!).show(message: 'No existe una dirección de servidor configurada');
-      Get.offNamed(ServerScreen.routeName);
-      return;
-    }
+    // Con configuración fija, siempre hay servidor configurado
+    server = ApiService.getFixedServerConfig();
+    print('🔧 DEBUG: LoginController inicializado con servidor fijo: ${server?.host}');
   }
 
   void setEmailValue(String? value) {
@@ -119,13 +116,12 @@ class LoginController extends GetxController {
   void logout() async {
     final customDialog = CustomDialog(context: Get.overlayContext!);
     customDialog.show();
-    ResponseRequest responseRequest = await AuthRepository().logout();
-    // if(!responseRequest.success) {
-    //   CustomSnackBar(context: Get.overlayContext).show(message: responseRequest.message);
-    // }
-    StorageService.instance.remove();
+    await AuthRepository().logout();
+    // Limpiar sesión del usuario
+    await StorageService.instance.clearUserSession();
     Get.find<SessionController>().clearSession();
     customDialog.hide();
-    Get.offAllNamed(ServerScreen.routeName);
+    // Con configuración fija, ir directamente al login
+    Get.offAllNamed(LoginScreen.routeName);
   }
 }

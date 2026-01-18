@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           SizedBox(height: 25.h),
                                           Text('Ingresar', style: Theme.of(context).textTheme.displayMedium),
                                           SizedBox(height: 15.h),
-                                          Text('Municipio: ${controller.server?.municipality ?? 'Undefined'}', style: Theme.of(context).textTheme.bodyLarge, textAlign: TextAlign.center),
+                                          Text('Ingrese sus datos de acceso', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 14.sp, color: Theme.of(context).hintColor), textAlign: TextAlign.center),
                                           SizedBox(height: 50.h),
                                           FormBuilderTextField(
                                             name: 'email',

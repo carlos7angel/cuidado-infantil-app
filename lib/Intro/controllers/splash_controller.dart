@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:cuidado_infantil/Auth/models/session_model.dart';
+import 'package:cuidado_infantil/Auth/ui/screens/login_screen.dart';
 import 'package:cuidado_infantil/Config/services/storage_service.dart';
 import 'package:cuidado_infantil/Intro/ui/screens/home_screen.dart';
-import 'package:cuidado_infantil/Intro/ui/screens/onboarding_screen.dart';
 import 'package:get/get.dart';
 
 class SplashController extends GetxController {
@@ -17,7 +17,7 @@ class SplashController extends GetxController {
     if(session != null && session?.accessToken != null) {
       Get.offAll(() => HomeScreen(currentTab: 2));
     } else {
-      Get.offAllNamed(OnboardingScreen.routeName);
+      Get.offAllNamed(LoginScreen.routeName);
     }
 
     super.onReady();

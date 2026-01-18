@@ -1,4 +1,3 @@
-import 'package:cuidado_infantil/Auth/models/server_model.dart';
 import 'package:cuidado_infantil/Auth/models/session_model.dart';
 import 'package:cuidado_infantil/Config/models/response_request.dart';
 import 'package:cuidado_infantil/Config/services/api_service.dart';
@@ -16,15 +15,6 @@ class AuthService {
 
   Future<ResponseRequest> accessServer({required String url}) async {
     final response = await _api.getRaw(url);
-    
-    if(response.success && response.data != null) {
-      final server = Server.fromJson(response.data!);
-      await StorageService.instance.setServer(server);
-      
-      if (server.host != null) {
-        _api.updateBaseUrl(server);
-      }
-    }
     return response;
   }
 
@@ -42,18 +32,18 @@ class AuthService {
     
     // Limpiar la sesión local primero para evitar que el interceptor interfiera
     _api.clearAuthToken();
-    await StorageService.instance.remove();
+    await StorageService.instance.clearUserSession();
     
     // Si hay token, intentar hacer logout en el servidor (pero no es crítico si falla)
     if (accessToken != null && accessToken.isNotEmpty) {
       try {
-        // Obtener la URL base del servidor
-        final server = StorageService.instance.getServer();
-        if (server?.host != null) {
-          // Construir la URL completa para el logout
-          String baseUrl = server!.apiVersion != null && server.apiVersion!.isNotEmpty
-              ? '${server.host}/${server.apiVersion}'
-              : server.host!;
+        // Usar configuración fija del servidor
+        final server = ApiService.getFixedServerConfig();
+        if (server.host != null) {
+        // Construir la URL completa para el logout
+        String baseUrl = server.apiVersion != null && server.apiVersion!.isNotEmpty
+            ? '${server.host}/${server.apiVersion}'
+            : server.host!;
           
           final fullUrl = '$baseUrl/logout';
 
@@ -100,16 +90,11 @@ class AuthService {
     }
 
     try {
-      // Obtener la URL base del servidor
-      final server = StorageService.instance.getServer();
-      if (server?.host == null) {
-        return ResponseRequest()
-          ..success = false
-          ..message = 'No hay servidor configurado';
-      }
+      // Usar configuración fija del servidor
+      final server = ApiService.getFixedServerConfig();
 
       // Construir la URL completa para el refresh token
-      String baseUrl = server!.apiVersion != null && server.apiVersion!.isNotEmpty
+      String baseUrl = server.apiVersion != null && server.apiVersion!.isNotEmpty
           ? '${server.host}/${server.apiVersion}'
           : server.host!;
       
