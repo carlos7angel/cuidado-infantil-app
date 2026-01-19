@@ -11,6 +11,7 @@ class Child {
   final String address;
   final String state;
   final String city;
+  final String? municipality;
   final bool hasInsurance;
   final String? insuranceDetails;
   final String? weight;
@@ -28,6 +29,8 @@ class Child {
   final String? motorDeficit;
   final bool hasDisease;
   final String? diseaseDetails;
+  final String? nutritionalProblems;
+  final String? outstandingSkills;
   final String? otherConsiderations;
   final List<FamilyMember> familyMembers;
   final String? guardianType;
@@ -37,6 +40,8 @@ class Child {
   final String? floorType;
   final String? finishingType;
   final String? bedrooms;
+  final String? incidentHistory;
+  final String? pets;
   final List<String> rooms;
   final List<String> basicServices;
   final String? transportMode;
@@ -64,6 +69,7 @@ class Child {
     required this.address,
     required this.state,
     required this.city,
+    this.municipality,
     required this.hasInsurance,
     this.insuranceDetails,
     this.weight,
@@ -81,6 +87,8 @@ class Child {
     this.motorDeficit,
     required this.hasDisease,
     this.diseaseDetails,
+    this.nutritionalProblems,
+    this.outstandingSkills,
     this.otherConsiderations,
     this.familyMembers = const [],
     this.guardianType,
@@ -90,6 +98,8 @@ class Child {
     this.floorType,
     this.finishingType,
     this.bedrooms,
+    this.incidentHistory,
+    this.pets,
     this.rooms = const [],
     this.basicServices = const [],
     this.transportMode,
@@ -118,6 +128,7 @@ class Child {
     String? address,
     String? state,
     String? city,
+    String? municipality,
     bool? hasInsurance,
     String? insuranceDetails,
     String? weight,
@@ -135,6 +146,8 @@ class Child {
     String? motorDeficit,
     bool? hasDisease,
     String? diseaseDetails,
+    String? nutritionalProblems,
+    String? outstandingSkills,
     String? otherConsiderations,
     List<FamilyMember>? familyMembers,
     String? guardianType,
@@ -144,6 +157,8 @@ class Child {
     String? floorType,
     String? finishingType,
     String? bedrooms,
+    String? incidentHistory,
+    String? pets,
     List<String>? rooms,
     List<String>? basicServices,
     String? transportMode,
@@ -171,6 +186,7 @@ class Child {
       address: address ?? this.address,
       state: state ?? this.state,
       city: city ?? this.city,
+      municipality: municipality ?? this.municipality,
       hasInsurance: hasInsurance ?? this.hasInsurance,
       insuranceDetails: insuranceDetails ?? this.insuranceDetails,
       weight: weight ?? this.weight,
@@ -188,6 +204,8 @@ class Child {
       motorDeficit: motorDeficit ?? this.motorDeficit,
       hasDisease: hasDisease ?? this.hasDisease,
       diseaseDetails: diseaseDetails ?? this.diseaseDetails,
+      nutritionalProblems: nutritionalProblems ?? this.nutritionalProblems,
+      outstandingSkills: outstandingSkills ?? this.outstandingSkills,
       otherConsiderations: otherConsiderations ?? this.otherConsiderations,
       familyMembers: familyMembers ?? this.familyMembers,
       guardianType: guardianType ?? this.guardianType,
@@ -197,6 +215,8 @@ class Child {
       floorType: floorType ?? this.floorType,
       finishingType: finishingType ?? this.finishingType,
       bedrooms: bedrooms ?? this.bedrooms,
+      incidentHistory: incidentHistory ?? this.incidentHistory,
+      pets: pets ?? this.pets,
       rooms: rooms ?? this.rooms,
       basicServices: basicServices ?? this.basicServices,
       transportMode: transportMode ?? this.transportMode,
@@ -498,6 +518,7 @@ class Child {
       address: general['address'] ?? map['address'] ?? '',
       state: general['state'] ?? map['state'] ?? '',
       city: general['city'] ?? map['city'] ?? '',
+      municipality: general['municipality'] ?? map['municipality'],
       hasInsurance: _parseBool(medicalRecord['has_insurance'] ?? map['has_insurance']),
       insuranceDetails: medicalRecord['insurance_details'] ?? map['insurance_details'],
       weight: medicalRecord['weight']?.toString() ?? map['weight']?.toString(),
@@ -515,6 +536,8 @@ class Child {
       motorDeficit: medicalRecord['deficit_motor']?.toString() ?? map['deficit_motor']?.toString(),
       hasDisease: _parseBool(medicalRecord['has_illness'] ?? map['has_illness']),
       diseaseDetails: medicalRecord['illness_details'] ?? map['illness_details'],
+      nutritionalProblems: medicalRecord['nutritional_problems'] ?? map['nutritional_problems'],
+      outstandingSkills: medicalRecord['outstanding_skills'] ?? map['outstanding_skills'],
       otherConsiderations: medicalRecord['other_observations'] ?? map['other_observations'],
       guardianType: socialRecord['guardian_type']?.toString() ?? map['guardian_type']?.toString(),
       familyMembers: familyMembersData
@@ -526,6 +549,8 @@ class Child {
       floorType: housing['floor_material']?.toString() ?? map['floor_type']?.toString(),
       finishingType: housing['finish']?.toString() ?? map['finishing_type']?.toString(),
       bedrooms: housing['bedrooms']?.toString() ?? map['bedrooms']?.toString(),
+      incidentHistory: socialRecord['incident_history']?.toString() ?? map['incident_history']?.toString(),
+      pets: socialRecord['pets']?.toString() ?? map['pets']?.toString(),
       rooms: _parseStringList(housing['rooms'] ?? map['rooms']),
       basicServices: _parseStringList(housing['utilities'] ?? map['basic_services']),
       transportMode: transport['type']?.toString() ?? map['transport_type']?.toString(),
@@ -571,6 +596,7 @@ class Child {
       address: values['address'] ?? '',
       state: values['state'] ?? '',
       city: values['city'] ?? '',
+      municipality: values['municipality'],
       hasInsurance: _parseBool(values['has_insurance']),
       insuranceDetails: values['insurance_details'],
       weight: values['weight']?.toString(),
@@ -588,6 +614,8 @@ class Child {
       motorDeficit: values['deficit_motor']?.toString(),
       hasDisease: _parseBool(values['has_illness']),
       diseaseDetails: values['illness_details'],
+      nutritionalProblems: values['nutritional_problems'],
+      outstandingSkills: values['outstanding_skills'],
       otherConsiderations: values['other_observations'],
       guardianType: values['guardian_type']?.toString(),
       familyMembers: (values['family_members'] as List<dynamic>? ?? [])
@@ -599,6 +627,8 @@ class Child {
       floorType: values['floor_type']?.toString(),
       finishingType: values['finishing_type']?.toString(),
       bedrooms: values['bedrooms']?.toString(),
+      incidentHistory: values['incident_history']?.toString(),
+      pets: values['pets']?.toString(),
       rooms: _parseStringList(values['rooms']),
       basicServices: _parseStringList(values['basic_services']),
       transportMode: values['transport_type']?.toString(),
@@ -629,6 +659,7 @@ class Child {
       'address': address,
       'state': state,
       'city': city,
+      'municipality': municipality,
       'has_insurance': hasInsurance,
       'insurance_details': insuranceDetails,
       'weight': weight,
@@ -646,6 +677,8 @@ class Child {
       'deficit_motor': motorDeficit,
       'has_illness': hasDisease,
       'illness_details': diseaseDetails,
+      'nutritional_problems': nutritionalProblems,
+      'outstanding_skills': outstandingSkills,
       'other_observations': otherConsiderations,
       'guardian_type': guardianType,
       'family_members': familyMembers.map((e) => e.toMap()).toList(),
@@ -655,6 +688,8 @@ class Child {
       'floor_type': floorType,
       'finishing_type': finishingType,
       'bedrooms': bedrooms,
+      'incident_history': incidentHistory,
+      'pets': pets,
       'rooms': rooms,
       'basic_services': basicServices,
       'transport_type': transportMode,
@@ -701,6 +736,7 @@ class Child {
       'address': address,
       'state': state,
       'city': city,
+      'municipality': municipality,
       'has_insurance': hasInsurance ? '1' : '0',
       'insurance_details': insuranceDetails,
       'weight': weight,
@@ -718,6 +754,8 @@ class Child {
       'deficit_motor': motorDeficit,
       'has_illness': hasDisease ? '1' : '0',
       'illness_details': diseaseDetails,
+      'nutritional_problems': nutritionalProblems,
+      'outstanding_skills': outstandingSkills,
       'other_observations': otherConsiderations,
       'guardian_type': guardianType,
       'family_members': familyMembers,
@@ -727,6 +765,8 @@ class Child {
       'floor_type': floorType,
       'finishing_type': finishingType,
       'bedrooms': bedrooms,
+      'incident_history': incidentHistory,
+      'pets': pets,
       'rooms': rooms,
       'basic_services': basicServices,
       'transport_type': transportMode,

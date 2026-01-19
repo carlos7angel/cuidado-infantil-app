@@ -293,6 +293,58 @@ class ChildSocialDetailsScreen extends StatelessWidget {
                   ),
                 ),
 
+if (child.incidentHistory != null && child.incidentHistory!.isNotEmpty) ...[
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Antecedentes de incidentes',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            child.incidentHistory!,
+                            textAlign: TextAlign.end,
+                            style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+                if (child.pets != null && child.pets!.isNotEmpty) ...[
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Tenencia de mascotas',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            child.pets!,
+                            textAlign: TextAlign.end,
+                            style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                
                 SizedBox(height: 20.h),
               ],
             ),

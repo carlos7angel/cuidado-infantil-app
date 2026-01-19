@@ -482,6 +482,58 @@ class ChildMedicalDetailsScreen extends StatelessWidget {
                   ),
                 ],
 
+                if (child.nutritionalProblems != null && child.nutritionalProblems!.isNotEmpty) ...[
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Problemas de nutrición',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            child.nutritionalProblems!,
+                            textAlign: TextAlign.end,
+                            style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+                if (child.outstandingSkills != null && child.outstandingSkills!.isNotEmpty) ...[
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Habilidades destacadas',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            child.outstandingSkills!,
+                            textAlign: TextAlign.end,
+                            style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
                 if (child.otherConsiderations != null && child.otherConsiderations!.isNotEmpty) ...[
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 10.h),

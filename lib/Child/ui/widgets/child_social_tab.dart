@@ -409,6 +409,61 @@ class _ChildSocialTabState extends State<ChildSocialTab> with AutomaticKeepAlive
             ),
           ),
 
+
+          SizedBox(height: 20.h),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 0),
+            child: ListTile(
+              contentPadding: EdgeInsets.symmetric(vertical: 0),
+              visualDensity: VisualDensity.compact,
+              leading: Icon(
+                UiIcons.inbox,
+                color: Theme.of(context).colorScheme.secondary,
+                size: 24,
+              ),
+              title: Text(
+                'Otros aspectos sociales',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ),
+
+          SizedBox(height: 20.h), 
+          LabelForm(text: 'Antecedentes de incidentes'),
+          FormFieldShadow(
+            child: FormBuilderTextField(
+              name: 'incident_history',
+              style: Theme.of(context).textTheme.bodySmall,
+              minLines: 2,
+              maxLines: 4,
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.maxLength(600, checkNullOrEmpty: false),
+              ]),
+              decoration: FormInputDecoration(context: context),
+              onChanged: (val) => widget.controller.updateChildField('incident_history', val),
+            ),
+          ),
+
+          SizedBox(height: 20.h),
+          LabelForm(text: 'Tenencia de mascotas'),
+          FormFieldShadow(
+            child: FormBuilderTextField(
+              name: 'pets',
+              style: Theme.of(context).textTheme.bodySmall,
+              minLines: 2,
+              maxLines: 4,
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.maxLength(600, checkNullOrEmpty: false),
+              ]),
+              decoration: FormInputDecoration(context: context),
+              onChanged: (val) => widget.controller.updateChildField('pets', val),
+            ),
+          ),
+
+          
+
           SizedBox(height: 50.h),
         ],
       ),

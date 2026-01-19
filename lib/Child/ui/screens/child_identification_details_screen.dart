@@ -221,6 +221,31 @@ class ChildIdentificationDetailsScreen extends StatelessWidget {
                   ),
                 ),
 
+                if (child.municipality != null && child.municipality!.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex:2,
+                          child: Text(
+                            'Municipio',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            child.municipality ?? '',
+                            textAlign: TextAlign.end,
+                            style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 10.h),
                   child: Row(

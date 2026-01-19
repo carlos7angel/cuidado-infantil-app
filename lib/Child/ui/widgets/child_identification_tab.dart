@@ -394,6 +394,22 @@ class _ChildIdentificationTabState extends State<ChildIdentificationTab> with Au
               ),
             ],
           ),
+          SizedBox(height: 20.h),
+          LabelForm(text: 'Municipio'),
+          FormFieldShadow(
+            child: FormBuilderTextField(
+              name: 'municipality',
+              style: Theme.of(context).textTheme.bodySmall,
+              keyboardType: TextInputType.name,
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.maxLength(150),
+              ]),
+              decoration: FormInputDecoration(
+                context: context,
+              ),
+              onChanged: (val) => widget.controller.updateChildField('municipality', val),
+            ),
+          ),
           SizedBox(height: 50.h),
         ],
       ),

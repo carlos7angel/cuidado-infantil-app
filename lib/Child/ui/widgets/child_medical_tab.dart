@@ -404,6 +404,48 @@ class _ChildMedicalTabState extends State<ChildMedicalTab> with AutomaticKeepAli
             ),
           ),
           SizedBox(height: 20.h),
+          LabelForm(text: 'Problemas de nutrición'),
+          FormFieldShadow(
+            child: FormBuilderTextField(
+              name: 'nutritional_problems',
+              style: Theme.of(context).textTheme.bodySmall,
+              minLines: 2,
+              maxLines: 4,
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.maxLength(600, checkNullOrEmpty: false),
+              ]),
+              decoration: FormInputDecoration(
+                context: context,
+                icon: Icon(
+                  UiIcons.edit,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+              onChanged: (val) => widget.controller.updateChildField('nutritional_problems', val),
+            ),
+          ),
+          SizedBox(height: 20.h),
+          LabelForm(text: 'Habilidades destacadas'),
+          FormFieldShadow(
+            child: FormBuilderTextField(
+              name: 'outstanding_skills',
+              style: Theme.of(context).textTheme.bodySmall,
+              minLines: 2,
+              maxLines: 4,
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.maxLength(600, checkNullOrEmpty: false),
+              ]),
+              decoration: FormInputDecoration(
+                context: context,
+                icon: Icon(
+                  UiIcons.edit,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+              onChanged: (val) => widget.controller.updateChildField('outstanding_skills', val),
+            ),
+          ),
+          SizedBox(height: 20.h),
           LabelForm(text: 'Otras consideraciones:'),
           FormFieldShadow(
             child: FormBuilderTextField(

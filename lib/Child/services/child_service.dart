@@ -181,6 +181,7 @@ class ChildService {
       'address': child.address,
       'state': child.state,
       'city': child.city,
+      'municipality': child.municipality,
 
       // ✅ Datos médicos
       'has_insurance': child.hasInsurance ? '1' : '0',
@@ -200,6 +201,8 @@ class ChildService {
       'deficit_motor': _mapDeficitLevel(child.motorDeficit),
       'has_illness': child.hasDisease ? '1' : '0',
       'illness_details': child.diseaseDetails ?? '',
+      'nutritional_problems': child.nutritionalProblems ?? '',
+      'outstanding_skills': child.outstandingSkills ?? '',
       'other_observations': child.otherConsiderations ?? '',
       'guardian_type': _mapGuardianType(child.guardianType),
 
@@ -210,6 +213,8 @@ class ChildService {
       'housing_floor_material': child.floorType ?? '', // Mapeado desde floor_type
       'housing_finish': child.finishingType ?? '', // Mapeado desde finishing_type
       'housing_bedrooms': child.bedrooms ?? '', // Mapeado desde bedrooms
+      'incident_history': child.incidentHistory ?? '',
+      'pets': child.pets ?? '',
       'transport_type': _mapTransportType(child.transportMode),
       'travel_time': _mapTravelTime(child.travelTime),
 

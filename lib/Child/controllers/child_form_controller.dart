@@ -63,7 +63,7 @@ class ChildFormController extends GetxController{
   static const Map<int, Set<String>> _tabFields = {
     0: {
       'first_name', 'paternal_last_name', 'maternal_last_name', 
-      'gender', 'birth_date', 'address', 'state', 'city'
+      'gender', 'birth_date', 'address', 'state', 'city', 'municipality'
     },
     1: {
       'has_insurance', 'insurance_details', 'weight', 'height',
@@ -71,11 +71,11 @@ class ChildFormController extends GetxController{
       'medical_treatment_details', 'has_psychological_treatment',
       'psychological_treatment_details', 'has_deficit', 'deficit_auditory',
       'deficit_visual', 'deficit_tactile', 'deficit_motor', 'has_illness',
-      'illness_details', 'other_observations'
+      'illness_details', 'nutritional_problems', 'outstanding_skills', 'other_observations'
     },
     2: {
       'guardian_type', 'housing_type', 'housing_tenure', 'housing_structure',
-      'floor_type', 'finishing_type', 'bedrooms', 'rooms', 'basic_services',
+      'floor_type', 'finishing_type', 'bedrooms', 'rooms', 'basic_services', 'incident_history', 'pets',
       'transport_type', 'travel_time'
     },
     3: {
@@ -274,6 +274,7 @@ class ChildFormController extends GetxController{
       address: _getIfPresent('address', (v) => v as String?),
       state: _getIfPresent('state', (v) => v as String?),
       city: _getIfPresent('city', (v) => v as String?),
+      municipality: _getIfPresent('municipality', (v) => v as String?),
       hasInsurance: _getIfPresent('has_insurance', (v) => v == '1'),
       insuranceDetails: _getIfPresent('insurance_details', (v) => v as String?),
       weight: _getIfPresent('weight', (v) => v?.toString()),
@@ -291,6 +292,8 @@ class ChildFormController extends GetxController{
       motorDeficit: _getIfPresent('deficit_motor', (v) => v?.toString()),
       hasDisease: _getIfPresent('has_illness', (v) => v == '1'),
       diseaseDetails: _getIfPresent('illness_details', (v) => v as String?),
+      nutritionalProblems: _getIfPresent('nutritional_problems', (v) => v as String?),
+      outstandingSkills: _getIfPresent('outstanding_skills', (v) => v as String?),
       otherConsiderations: _getIfPresent('other_observations', (v) => v as String?),
       guardianType: _getIfPresent('guardian_type', (v) => v?.toString()),
       housingType: _getIfPresent('housing_type', (v) => v?.toString()),
@@ -303,6 +306,8 @@ class ChildFormController extends GetxController{
       basicServices: _getIfPresent('basic_services', (v) => v as List<String>?),
       transportMode: _getIfPresent('transport_type', (v) => v?.toString()),
       travelTime: _getIfPresent('travel_time', (v) => v?.toString()),
+      incidentHistory: _getIfPresent('incident_history', (v) => v as String?),
+      pets: _getIfPresent('pets', (v) => v as String?),
       enrollmentDate: _getIfPresent('enrollment_date', (v) => v as DateTime?),
       roomId: _getIfPresent('room_id', (v) => v?.toString()),
       enrollmentFiles: _getIfPresent('file_picker', (v) => v as List<dynamic>?),
@@ -346,6 +351,9 @@ class ChildFormController extends GetxController{
         break;
       case 'city':
         _currentChild = _currentChild!.copyWith(city: value);
+        break;
+      case 'municipality':
+        _currentChild = _currentChild!.copyWith(municipality: value);
         break;
       case 'has_insurance':
         _currentChild = _currentChild!.copyWith(hasInsurance: value == '1');
@@ -398,6 +406,12 @@ class ChildFormController extends GetxController{
       case 'illness_details':
         _currentChild = _currentChild!.copyWith(diseaseDetails: value);
         break;
+      case 'nutritional_problems':
+        _currentChild = _currentChild!.copyWith(nutritionalProblems: value);
+        break;
+      case 'outstanding_skills':
+        _currentChild = _currentChild!.copyWith(outstandingSkills: value);
+        break;
       case 'other_observations':
         _currentChild = _currentChild!.copyWith(otherConsiderations: value);
         break;
@@ -430,6 +444,12 @@ class ChildFormController extends GetxController{
         break;
       case 'transport_type':
         _currentChild = _currentChild!.copyWith(transportMode: value);
+        break;
+      case 'incident_history':
+        _currentChild = _currentChild!.copyWith(incidentHistory: value);
+        break;
+      case 'pets':
+        _currentChild = _currentChild!.copyWith(pets: value);
         break;
       case 'travel_time':
         _currentChild = _currentChild!.copyWith(travelTime: value);
