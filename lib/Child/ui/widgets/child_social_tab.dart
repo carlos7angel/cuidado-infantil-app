@@ -1,4 +1,6 @@
 import 'package:cuidado_infantil/Child/controllers/child_form_controller.dart';
+import 'package:cuidado_infantil/Child/models/child.dart';
+import 'package:cuidado_infantil/Child/models/enums.dart';
 import 'package:cuidado_infantil/Child/models/family_member.dart';
 import 'package:cuidado_infantil/Child/ui/widgets/family_member_dialog.dart';
 import 'package:cuidado_infantil/Config/general/ui_icons.dart';
@@ -134,16 +136,10 @@ class _ChildSocialTabState extends State<ChildSocialTab> with AutomaticKeepAlive
                 FormBuilderValidators.required(),
               ]),
               decoration: FormInputDecoration(context: context),
-              items: const [
-                DropdownMenuItem(value: 'madre', child: Text('Madre')),
-                DropdownMenuItem(value: 'padre', child: Text('Padre')),
-                DropdownMenuItem(value: 'ambos', child: Text('Ambos')),
-                DropdownMenuItem(value: 'tutor', child: Text('Tutor')),
-                DropdownMenuItem(value: 'hermano', child: Text('Hermano')),
-                DropdownMenuItem(value: 'abuelos', child: Text('Abuelos')),
-                DropdownMenuItem(value: 'tios', child: Text('Tíos')),
-                DropdownMenuItem(value: 'otros', child: Text('Otros')),
-              ],
+              items: GuardianType.values.map((e) => DropdownMenuItem(
+                value: e.value,
+                child: Text(e.label),
+              )).toList(),
               onChanged: (val) => widget.controller.updateChildField('guardian_type', val),
             ),
           ),
@@ -236,12 +232,10 @@ class _ChildSocialTabState extends State<ChildSocialTab> with AutomaticKeepAlive
             // validator: FormBuilderValidators.compose([
             //   FormBuilderValidators.required(),
             // ]),
-            options: [
-              FormBuilderFieldOption(value: 'casa', child: Text('Casa')),
-              FormBuilderFieldOption(value: 'departamento', child: Text('Departamento')),
-              FormBuilderFieldOption(value: 'cuarto', child: Text('Cuarto')),
-              FormBuilderFieldOption(value: 'otro', child: Text('Otro')),
-            ],
+            options: HousingType.values.map((e) => FormBuilderFieldOption(
+              value: e.value,
+              child: Text(e.label),
+            )).toList(),
             decoration: InputDecoration(contentPadding: EdgeInsets.all(0), border: InputBorder.none)
           ),
 
@@ -256,13 +250,10 @@ class _ChildSocialTabState extends State<ChildSocialTab> with AutomaticKeepAlive
               // ]),
               onChanged: (val) => widget.controller.updateChildField('housing_tenure', val),
               decoration: FormInputDecoration(context: context),
-              items: const [
-                DropdownMenuItem(value: 'propio', child: Text('Propio')),
-                DropdownMenuItem(value: 'alquiler', child: Text('Alquiler')),
-                DropdownMenuItem(value: 'anticretico', child: Text('Anticrético')),
-                DropdownMenuItem(value: 'familiar', child: Text('Familiar')),
-                DropdownMenuItem(value: 'cuidador', child: Text('Cuidador')),
-              ],
+              items: HousingTenure.values.map((e) => DropdownMenuItem(
+                value: e.value,
+                child: Text(e.label),
+              )).toList(),
             ),
           ),
 
@@ -276,11 +267,10 @@ class _ChildSocialTabState extends State<ChildSocialTab> with AutomaticKeepAlive
               //   FormBuilderValidators.required(),
               // ]),
               decoration: FormInputDecoration(context: context),
-              items: const [
-                DropdownMenuItem(value: 'madera', child: Text('Madera')),
-                DropdownMenuItem(value: 'ladrillo', child: Text('Ladrillo')),
-                DropdownMenuItem(value: 'adobe', child: Text('Adobe')),
-              ],
+              items: HousingWallMaterial.values.map((e) => DropdownMenuItem(
+                value: e.value,
+                child: Text(e.label),
+              )).toList(),
             ),
           ),
 
@@ -294,12 +284,10 @@ class _ChildSocialTabState extends State<ChildSocialTab> with AutomaticKeepAlive
               //   FormBuilderValidators.required(),
               // ]),
               decoration: FormInputDecoration(context: context),
-              items: const [
-                DropdownMenuItem(value: 'tierra', child: Text('Piso tierra')),
-                DropdownMenuItem(value: 'cemento', child: Text('Piso cemento')),
-                DropdownMenuItem(value: 'machimbre', child: Text('Piso machimbre')),
-                DropdownMenuItem(value: 'parquet', child: Text('Parquet')),
-              ],
+              items: HousingFloorMaterial.values.map((e) => DropdownMenuItem(
+                value: e.value,
+                child: Text(e.label),
+              )).toList(),
             ),
           ),
 
@@ -313,10 +301,10 @@ class _ChildSocialTabState extends State<ChildSocialTab> with AutomaticKeepAlive
               //   FormBuilderValidators.required(),
               // ]),
               decoration: FormInputDecoration(context: context),
-              items: const [
-                DropdownMenuItem(value: 'obra_fina', child: Text('Obra fina')),
-                DropdownMenuItem(value: 'obra_gruesa', child: Text('Obra gruesa')),
-              ],
+              items: HousingFinish.values.map((e) => DropdownMenuItem(
+                value: e.value,
+                child: Text(e.label),
+              )).toList(),
             ),
           ),
 
@@ -362,15 +350,10 @@ class _ChildSocialTabState extends State<ChildSocialTab> with AutomaticKeepAlive
               contentPadding: EdgeInsets.all(0),
               border: InputBorder.none,
             ),
-            options: const [
-              FormBuilderFieldOption(value: 'agua', child: Text('Agua potable')),
-              FormBuilderFieldOption(value: 'electricidad', child: Text('Energía eléctrica')),
-              FormBuilderFieldOption(value: 'alcantarillado', child: Text('Alcantarillado')),
-              FormBuilderFieldOption(value: 'basura', child: Text('Recojo de basura')),
-              FormBuilderFieldOption(value: 'gas', child: Text('Gas')),
-              FormBuilderFieldOption(value: 'internet', child: Text('Internet')),
-              FormBuilderFieldOption(value: 'tv_cable', child: Text('TV Cable')),
-            ],
+            options: HousingUtility.values.map((e) => FormBuilderFieldOption(
+              value: e.value,
+              child: Text(e.label),
+            )).toList(),
           ),
 
           SizedBox(height: 20.h),
@@ -383,11 +366,10 @@ class _ChildSocialTabState extends State<ChildSocialTab> with AutomaticKeepAlive
               //   FormBuilderValidators.required(),
               // ]),
               decoration: FormInputDecoration(context: context),
-              items: const [
-                DropdownMenuItem(value: 'propio', child: Text('Transporte propio')),
-                DropdownMenuItem(value: 'publico', child: Text('Público')),
-                DropdownMenuItem(value: 'a_pie', child: Text('A pie')),
-              ],
+              items: TransportType.values.map((e) => DropdownMenuItem(
+                value: e.value,
+                child: Text(e.label),
+              )).toList(),
             ),
           ),
 
@@ -401,11 +383,10 @@ class _ChildSocialTabState extends State<ChildSocialTab> with AutomaticKeepAlive
               //   FormBuilderValidators.required(),
               // ]),
               decoration: FormInputDecoration(context: context),
-              items: const [
-                DropdownMenuItem(value: 'menos_media_hora', child: Text('Menos de media hora')),
-                DropdownMenuItem(value: 'media_a_una_hora', child: Text('Entre media y una hora')),
-                DropdownMenuItem(value: 'mas_de_una_hora', child: Text('Más de una hora')),
-              ],
+              items: TravelTime.values.map((e) => DropdownMenuItem(
+                value: e.value,
+                child: Text(e.label),
+              )).toList(),
             ),
           ),
 

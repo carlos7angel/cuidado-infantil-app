@@ -43,7 +43,10 @@ class _ChildOptionsScreenState extends State<ChildOptionsScreen> {
         builder: (controller) {
           return Scaffold(
             key: _scaffoldKey,
-            body: CustomScrollView(
+            body: RefreshIndicator(
+            onRefresh: () => controller.loadChildDetails(),
+            child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
             slivers: <Widget>[
               SliverAppBar(
                 pinned: true,
@@ -205,6 +208,7 @@ class _ChildOptionsScreenState extends State<ChildOptionsScreen> {
                   )
                 )
             ]
+          ),
           ),
           floatingActionButton: controller.child != null
               ? FloatingActionButton( //.extended

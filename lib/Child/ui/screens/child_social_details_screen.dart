@@ -1,5 +1,6 @@
 import 'package:cuidado_infantil/Child/controllers/child_options_controller.dart';
 import 'package:cuidado_infantil/Child/models/child.dart';
+import 'package:cuidado_infantil/Child/models/enums.dart';
 import 'package:cuidado_infantil/Config/general/ui_icons.dart';
 import 'package:cuidado_infantil/Config/widgets/card_child.dart';
 import 'package:cuidado_infantil/Config/widgets/sliver_app_bar_title.dart';
@@ -12,31 +13,6 @@ class ChildSocialDetailsScreen extends StatelessWidget {
   static final String routeName = '/child_social_details';
   
   const ChildSocialDetailsScreen({super.key});
-
-  String _formatGuardianType(String? value) {
-    if (value == null || value.isEmpty) return 'No especificado';
-    switch (value.toLowerCase()) {
-      case 'madre':
-        return 'Madre';
-      case 'padre':
-        return 'Padre';
-      case 'ambos':
-        return 'Ambos';
-      case 'tutor':
-        return 'Tutor';
-      case 'hermano':
-        return 'Hermano';
-      case 'abuelos':
-        return 'Abuelos';
-      case 'tios':
-        return 'Tíos';
-      case 'otro':
-      case 'otros':
-        return 'Otro';
-      default:
-        return value;
-    }
-  }
 
   String _formatDate(DateTime? date) {
     if (date == null) return 'No especificado';
@@ -92,7 +68,7 @@ class ChildSocialDetailsScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          _formatGuardianType(child.guardianType),
+                          GuardianType.fromValue(child.guardianType)?.label ?? 'No especificado',
                           textAlign: TextAlign.end,
                           style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
                         ),
@@ -116,7 +92,7 @@ class ChildSocialDetailsScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          child.housingType ?? 'No especificado',
+                          HousingType.fromValue(child.housingType)?.label ?? 'No especificado',
                           textAlign: TextAlign.end,
                           style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
                         ),
@@ -140,7 +116,7 @@ class ChildSocialDetailsScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          child.housingTenure ?? 'No especificado',
+                          HousingTenure.fromValue(child.housingTenure)?.label ?? 'No especificado',
                           textAlign: TextAlign.end,
                           style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
                         ),
@@ -164,7 +140,7 @@ class ChildSocialDetailsScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          child.housingStructure ?? 'No especificado',
+                          HousingWallMaterial.fromValue(child.housingStructure)?.label ?? 'No especificado',
                           textAlign: TextAlign.end,
                           style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
                         ),
@@ -188,7 +164,7 @@ class ChildSocialDetailsScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          child.floorType ?? 'No especificado',
+                          HousingFloorMaterial.fromValue(child.floorType)?.label ?? 'No especificado',
                           textAlign: TextAlign.end,
                           style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
                         ),
@@ -212,7 +188,7 @@ class ChildSocialDetailsScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          child.finishingType ?? 'No especificado',
+                          HousingFinish.fromValue(child.finishingType)?.label ?? 'No especificado',
                           textAlign: TextAlign.end,
                           style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
                         ),
@@ -245,6 +221,31 @@ class ChildSocialDetailsScreen extends StatelessWidget {
                   ),
                 ),
 
+                if (child.basicServices.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Servicios básicos',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            child.basicServices.map((e) => HousingUtility.fromValue(e)?.label ?? e).join(', '),
+                            textAlign: TextAlign.end,
+                            style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                 Container(
                   padding: EdgeInsets.symmetric(vertical: 10.h),
                   child: Row(
@@ -260,7 +261,7 @@ class ChildSocialDetailsScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          child.transportMode ?? 'No especificado',
+                          TransportType.fromValue(child.transportMode)?.label ?? 'No especificado',
                           textAlign: TextAlign.end,
                           style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
                         ),
@@ -284,7 +285,7 @@ class ChildSocialDetailsScreen extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: Text(
-                          child.travelTime ?? 'No especificado',
+                          TravelTime.fromValue(child.travelTime)?.label ?? 'No especificado',
                           textAlign: TextAlign.end,
                           style: TextStyle(color: Theme.of(context).focusColor, fontSize: 14.sp),
                         ),

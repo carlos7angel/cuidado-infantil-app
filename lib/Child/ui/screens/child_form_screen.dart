@@ -6,6 +6,7 @@ import 'package:cuidado_infantil/Child/ui/widgets/child_enrollment_tab.dart';
 import 'package:cuidado_infantil/Config/general/ui_icons.dart';
 import 'package:cuidado_infantil/Config/widgets/gradient_text.dart';
 import 'package:cuidado_infantil/Intro/ui/screens/home_screen.dart';
+import 'package:cuidado_infantil/Child/ui/screens/child_options_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:cuidado_infantil/Config/general/app_config.dart' as config;
@@ -74,7 +75,12 @@ class _ChildFormScreenState extends State<ChildFormScreen> with TickerProviderSt
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) {
-          Get.offAllNamed(HomeScreen.routeName);
+          final controller = Get.find<ChildFormController>();
+          if (controller.isEditing) {
+            Get.offNamed(ChildOptionsScreen.routeName);
+          } else {
+            Get.offAllNamed(HomeScreen.routeName);
+          }
         }
       },
       child: GetBuilder<ChildFormController>(
@@ -89,7 +95,11 @@ class _ChildFormScreenState extends State<ChildFormScreen> with TickerProviderSt
                 leading: IconButton(
                   icon: Icon(UiIcons.returnIcon, color: Theme.of(context).primaryColor),
                   onPressed: () {
-                    Get.offAllNamed(HomeScreen.routeName);
+                    if (controller.isEditing) {
+                      Get.offNamed(ChildOptionsScreen.routeName);
+                    } else {
+                      Get.offAllNamed(HomeScreen.routeName);
+                    }
                   },
                 ),
                 backgroundColor: Theme.of(context).colorScheme.secondary,

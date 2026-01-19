@@ -1,3 +1,4 @@
+import 'package:cuidado_infantil/Child/controllers/child_options_controller.dart';
 import 'package:cuidado_infantil/Child/repositories/child_repository.dart';
 import 'package:cuidado_infantil/Child/ui/screens/child_success_screen.dart';
 import 'package:cuidado_infantil/Child/ui/screens/child_options_screen.dart';
@@ -962,7 +963,7 @@ class ChildFormController extends GetxController{
 
       print('✅ DEBUG: API retornó éxito ');
       print('  Message: ${response.message}');
-      customDialog.hide();
+      // customDialog.hide(); // NO ocultar aquí para evitar parpadeo o espera sin feedback
 
       // Navegar según el modo
       if (isEditing && childId != null) {
@@ -970,10 +971,22 @@ class ChildFormController extends GetxController{
         // Actualizar el child en storage con los datos actualizados antes de limpiar
         await StorageService.instance.setSelectedChild(child);
         print('💾 DEBUG: Child actualizado guardado en storage');
+
+        // Actualizar el estado en ChildOptionsController para reflejar los cambios en la vista de detalles
+        try {
+          if (Get.isRegistered<ChildOptionsController>()) {
+            await Get.find<ChildOptionsController>().refreshChildDetails();
+            print('🔄 DEBUG: ChildOptionsController refrescado con los nuevos datos');
+          }
+        } catch (e) {
+          print('⚠️ DEBUG: No se pudo refrescar ChildOptionsController: $e');
+        }
         
         // Limpiar formulario después de éxito
         clearForm();
         print('🧹 DEBUG: Formulario limpiado después del éxito');
+        
+        customDialog.hide(); // Ocultar justo antes de mostrar el modal de éxito
         
         // Mostrar modal de confirmación que navegará al detalle
         _showUpdateSuccessModal();
@@ -981,6 +994,7 @@ class ChildFormController extends GetxController{
         // En modo creación, limpiar formulario e ir a la pantalla de éxito
         clearForm();
         print('🧹 DEBUG: Formulario limpiado después del éxito');
+        customDialog.hide(); // Ocultar antes de navegar
         Get.offNamed(ChildSuccessScreen.routeName);
       }
 

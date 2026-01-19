@@ -36,6 +36,12 @@ class ChildOptionsController extends GetxController {
     }
   }
 
+  Future<void> refreshChildDetails() async {
+    if (_childId != null) {
+      await loadChildDetails();
+    }
+  }
+
   Future<void> loadChildDetails() async {
     if (_childId == null) return;
 
