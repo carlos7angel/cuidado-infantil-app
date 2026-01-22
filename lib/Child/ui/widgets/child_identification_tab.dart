@@ -83,15 +83,19 @@ class _ChildIdentificationTabState extends State<ChildIdentificationTab> with Au
 
     Widget avatarImage;
 
-    if (_avatarFile != null) {
+    // Prioridad: 1. Archivo local (recién seleccionado o en el estado del controlador)
+    final dynamic localAvatar = _avatarFile ?? child?.avatar;
+    
+    if (localAvatar is File) {
       avatarImage = ClipRRect(
         borderRadius: BorderRadius.circular(80.r),
         child: Image.file(
-          _avatarFile!,
+          localAvatar,
           fit: BoxFit.cover,
         ),
       );
     } else if (child != null) {
+      // 2. Imagen remota (URL del backend o fallback)
       avatarImage = CachedImage(
         image: child.getAvatarImage(),
         isRound: true,
@@ -99,6 +103,7 @@ class _ChildIdentificationTabState extends State<ChildIdentificationTab> with Au
         color: Colors.transparent,
       );
     } else {
+      // 3. Default absoluto
       avatarImage = CachedImage(
         image: 'assets/images/anonymous_user.png',
         isRound: true,

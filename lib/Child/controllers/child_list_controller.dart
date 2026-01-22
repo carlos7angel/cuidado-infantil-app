@@ -138,6 +138,12 @@ class ChildListController extends GetxController {
     applyFilters();
   }
 
+  /// Resetea todos los filtros (búsqueda y rooms) y limpia el query actual
+  void resetFilters() {
+    _currentSearchQuery = '';
+    _selectedRoomIds.clear();
+  }
+
   /// Aplica todos los filtros (búsqueda + rooms)
   void applyFilters() {
     _applyFilters();

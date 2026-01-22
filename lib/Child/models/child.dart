@@ -58,6 +58,7 @@ class Child {
   final List<dynamic>? fileHomeSketch;
   final List<dynamic>? filePickupAuthorization;
   final dynamic avatar;
+  final String? avatarUrl;
 
   const Child({
     this.id,
@@ -116,6 +117,7 @@ class Child {
     this.fileHomeSketch,
     this.filePickupAuthorization,
     this.avatar,
+    this.avatarUrl,
   });
 
   Child copyWith({
@@ -175,6 +177,7 @@ class Child {
     List<dynamic>? fileHomeSketch,
     List<dynamic>? filePickupAuthorization,
     dynamic avatar,
+    String? avatarUrl,
   }) {
     return Child(
       id: id ?? this.id,
@@ -233,6 +236,7 @@ class Child {
       fileHomeSketch: fileHomeSketch ?? this.fileHomeSketch,
       filePickupAuthorization: filePickupAuthorization ?? this.filePickupAuthorization,
       avatar: avatar ?? this.avatar,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
     );
   }
 
@@ -410,8 +414,13 @@ class Child {
 
   /// Obtiene la ruta de la imagen del avatar según el género del infante
   String getAvatarImage() {
-    final value = avatar;
+    // 1. Si tenemos una URL válida del backend, usarla
+    if (avatarUrl != null && avatarUrl!.isNotEmpty) {
+      return avatarUrl!;
+    }
 
+    // 2. Si avatar es un String (ruta local o URL legacy), usarlo
+    final value = avatar;
     if (value is String) {
       final trimmed = value.trim();
       if (trimmed.isNotEmpty && trimmed.toLowerCase() != 'null') {
@@ -419,6 +428,7 @@ class Child {
       }
     }
 
+    // 3. Fallback al género
     return Child.getAvatarImageByGender(gender);
   }
 
@@ -564,7 +574,8 @@ class Child {
       fileUtilityBill: fileUtilityBill != null ? [fileUtilityBill] : (map['file_utility_bill'] as List<dynamic>?),
       fileHomeSketch: fileHomeSketch != null ? [fileHomeSketch] : (map['file_home_sketch'] as List<dynamic>?),
       filePickupAuthorization: filePickupAuthorization != null ? [filePickupAuthorization] : (map['file_pickup_authorization'] as List<dynamic>?),
-      avatar: general['avatar'] ?? map['avatar'] ?? '',
+      avatar: null, // El avatar viene en avatarUrl, dejamos este campo solo para nuevos archivos locales
+      avatarUrl: general['avatar_url'] ?? map['avatar_url'],
     );
   }
 
@@ -643,10 +654,38 @@ class Child {
       fileHomeSketch: values['file_home_sketch'] as List<dynamic>?,
       filePickupAuthorization: values['file_pickup_authorization'] as List<dynamic>?,
       avatar: values['avatar'] ?? '',
+      avatarUrl: values['avatar_url'],
     );
   }
 
   Map<String, dynamic> toMap() {
+    dynamic _sanitizeFileField(dynamic value) {
+      if (value == null) return null;
+      if (value is String || value is num || value is bool) return value;
+      
+      // Lists need to be processed recursively
+      if (value is List) {
+        final list = value.map((e) => _sanitizeFileField(e)).where((e) => e != null).toList();
+        return list.isEmpty ? null : list;
+      }
+
+      // Maps need to be processed recursively too
+      if (value is Map) {
+        final map = <String, dynamic>{};
+        value.forEach((k, v) {
+          final sanitized = _sanitizeFileField(v);
+          if (sanitized != null) {
+            map[k.toString()] = sanitized;
+          }
+        });
+        return map.isEmpty ? null : map;
+      }
+
+      // Any other type (File, PlatformFile, etc.) is not encodable for JSON storage
+      // print('Sanitizing excluded type: ${value.runtimeType}');
+      return null;
+    }
+
     return {
       'id': id,
       'first_name': firstName,
@@ -694,16 +733,17 @@ class Child {
       'travel_time': travelTime,
       'enrollment_date': enrollmentDate?.toIso8601String(),
       'room_id': roomId,
-      'enrollment_files': enrollmentFiles,
-      'file_birth_certificate': fileBirthCertificate,
-      'file_admission_request': fileAdmissionRequest,
-      'file_commitment': fileCommitment,
-      'file_vaccination_card': fileVaccinationCard,
-      'file_parent_id': fileParentId,
-      'file_utility_bill': fileUtilityBill,
-      'file_home_sketch': fileHomeSketch,
-      'file_pickup_authorization': filePickupAuthorization,
-      'avatar': avatar,
+      'enrollment_files': _sanitizeFileField(enrollmentFiles),
+      'file_birth_certificate': _sanitizeFileField(fileBirthCertificate),
+      'file_admission_request': _sanitizeFileField(fileAdmissionRequest),
+      'file_commitment': _sanitizeFileField(fileCommitment),
+      'file_vaccination_card': _sanitizeFileField(fileVaccinationCard),
+      'file_parent_id': _sanitizeFileField(fileParentId),
+      'file_utility_bill': _sanitizeFileField(fileUtilityBill),
+      'file_home_sketch': _sanitizeFileField(fileHomeSketch),
+      'file_pickup_authorization': _sanitizeFileField(filePickupAuthorization),
+      'avatar': _sanitizeFileField(avatar),
+      'avatar_url': avatarUrl,
     };
   }
 

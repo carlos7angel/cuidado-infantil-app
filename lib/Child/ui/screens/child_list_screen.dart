@@ -87,7 +87,9 @@ class _ChildListScreenState extends State<ChildListScreen> {
         body: RefreshIndicator(
           // edgeOffset: 210.w,
           onRefresh: () async {
+            _searchController.clear();
             final controller = Get.find<ChildListController>();
+            controller.resetFilters();
             await controller.loadChildren();
           },
           child: CustomScrollView(

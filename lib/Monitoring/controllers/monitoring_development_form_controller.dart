@@ -293,7 +293,7 @@ class MonitoringDevelopmentFormController extends GetxController {
             child: Text(
               "Aceptar",
               style: Theme.of(context).textTheme.bodyMedium?.merge(
-                TextStyle(color: Theme.of(context).primaryColor, fontSize: 13.sp, fontWeight: FontWeight.w600)
+                TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 13.sp, fontWeight: FontWeight.w600)
               ),
             ),
           ),
