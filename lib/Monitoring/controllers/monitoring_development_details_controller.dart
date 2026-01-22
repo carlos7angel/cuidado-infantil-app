@@ -91,15 +91,13 @@ class MonitoringDevelopmentDetailsController extends GetxController {
 
       if (dataMap != null) {
         _evaluation = ChildDevelopmentEvaluation.fromJson(dataMap);
-        print('✅ DEBUG: Detalles de evaluación cargados');
       } else {
-        print('⚠️ WARNING: No se encontraron detalles de evaluación');
+        // No se encontraron detalles de evaluación
       }
 
       _loading = false;
       update(['development_details']);
     } catch (e) {
-      print('❌ ERROR cargando detalles de evaluación: $e');
       final overlayContext = Get.overlayContext;
       if (overlayContext != null) {
         CustomSnackBar(context: overlayContext).show(

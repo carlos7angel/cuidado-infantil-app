@@ -5,7 +5,8 @@ const LOCAL_DATABASE_NAME = "cuidadoinfantildb";
  * IMPORTANTE: Estos valores se configuran en tiempo de compilación
  * Para cambiar el servidor, modificar estos valores antes de compilar la app
  */
-const SERVER_HOST = "http://192.168.2.102/cuidado-infantil-vmb/public";  // URL base del servidor API
+// const SERVER_HOST = "http://192.168.2.102/cuidado-infantil-vmb/public";  // URL base del servidor API
+const SERVER_HOST = "https://cuidado-infantil.codesolutions.online";
 const SERVER_API_VERSION = "v1";  // Versión de la API
 
 

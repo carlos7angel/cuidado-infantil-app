@@ -4,7 +4,6 @@ import 'package:cuidado_infantil/Config/widgets/form_input_decoration.dart';
 import 'package:cuidado_infantil/Config/widgets/gradient_text.dart';
 import 'package:cuidado_infantil/Config/widgets/label_form.dart';
 import 'package:cuidado_infantil/Monitoring/controllers/monitoring_nutrition_form_controller.dart';
-import 'package:cuidado_infantil/Monitoring/ui/widgets/nutrition_child_card.dart';
 import 'package:cuidado_infantil/Monitoring/ui/widgets/nutrition_child_details_card.dart';
 import 'package:flutter/material.dart';
 import 'package:cuidado_infantil/Config/general/app_config.dart' as config;

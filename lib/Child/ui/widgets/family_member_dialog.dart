@@ -41,7 +41,6 @@ class _FamilyMemberDialogState extends State<FamilyMemberDialog> {
   @override
   Widget build(BuildContext context) {
 
-    var height = MediaQuery.of(context).size.height;
     var width = (MediaQuery.of(context).size.width).w;
 
     return AlertDialog(

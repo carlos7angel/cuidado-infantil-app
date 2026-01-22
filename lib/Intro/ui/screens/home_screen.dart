@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cuidado_infantil/Child/ui/screens/child_form_screen.dart';
 import 'package:cuidado_infantil/Child/ui/screens/child_list_screen.dart';
 import 'package:cuidado_infantil/Config/general/ui_icons.dart';
@@ -49,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: circleSize,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [config.Colors().mainColor(0.9), config.Colors().mainColor(0.2)],
+                    colors: [config.AppColors.mainColor(0.9), config.AppColors.mainColor(0.2)],
                       begin: Alignment.center,
                       end: Alignment.bottomRight
                   ),
@@ -118,11 +116,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     'Hola, ${controller.user?.educator?.fullName}',
                                     style: Theme.of(context).textTheme.titleMedium?.merge(TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w500)),
                                   ),
-                                  // SizedBox(height: 15.h,),
                                   Row(
                                     children: [
-                                      // Icon(UiIcons.home),
-                                      // SizedBox(width: 10.w),
                                       Expanded(
                                         child: Text(
                                           controller.childcareCenter!.name!.toUpperCase(),
@@ -258,7 +253,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         'Seguimiento y Monitoreo',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      trailing: Icon(Icons.chevron_right),
                     ),
                   ),
 
@@ -554,302 +548,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   SizedBox(height: 20.h,)
-
-                  // Container(
-                  //     height: 185.h,
-                  //     //padding: EdgeInsets.only(top: 15.h, left: 20.w),
-                  //
-                  //     child: ListView(
-                  //       padding: EdgeInsets.only(top: 10.h, bottom: 10.h),
-                  //       scrollDirection: Axis.horizontal,
-                  //       children: [
-                  //         SizedBox(width: 20.w,),
-                  //         InkWell(
-                  //           onTap: () => Get.toNamed(ChildFormScreen.routeName),
-                  //           child: Container(
-                  //             margin: EdgeInsets.only(right: 0.w),
-                  //             child: Stack(
-                  //               // overflow: Overflow.visible,
-                  //               clipBehavior: Clip.none,
-                  //               alignment: AlignmentDirectional.topCenter,
-                  //               children: <Widget>[
-                  //                 Container(
-                  //                   margin: EdgeInsets.only(top: 0),
-                  //                   padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 15.w),
-                  //                   width: 165.w,
-                  //                   height: 160.h,
-                  //                   decoration: BoxDecoration(
-                  //                       color: Theme.of(context).primaryColor,
-                  //                       // color: Color(0xFF78BCC4).withOpacity(0.85),
-                  //                       borderRadius: BorderRadius.circular(6.r),
-                  //                       boxShadow: [
-                  //                         BoxShadow(
-                  //                             color: Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
-                  //                       ]
-                  //                   ),
-                  //                   child: Column(
-                  //                     crossAxisAlignment: CrossAxisAlignment.center,
-                  //                     children: <Widget>[
-                  //                       Stack(
-                  //                         children: [
-                  //                           Container(
-                  //                             width: 55.w,
-                  //                             height: 55.w,
-                  //                             decoration: BoxDecoration(
-                  //                               color: Colors.grey.withOpacity(0.2),
-                  //                               borderRadius: BorderRadius.all(
-                  //                                 Radius.circular(100.r),
-                  //                               ),
-                  //                             ),
-                  //                           ),
-                  //                           Container(
-                  //                             child: Image(
-                  //                               image: AssetImage('assets/images/option_1.png'),
-                  //                               height: 60.h,
-                  //                             ),
-                  //                           ),
-                  //                         ],
-                  //                       ),
-                  //                       SizedBox(height: 8.h,),
-                  //                       Text(
-                  //                         "Nuevo".toUpperCase(),
-                  //                         style: Theme.of(context).textTheme.bodyMedium?.merge(
-                  //                             TextStyle(
-                  //                                 color: Theme.of(context).colorScheme.secondary,
-                  //                                 fontSize: 18.sp,
-                  //                                 fontWeight: FontWeight.w700,
-                  //                                 // fontFamily: 'Kruda'
-                  //                             )
-                  //                         ),
-                  //                         maxLines: 1,
-                  //                         softWrap: false,
-                  //                         overflow: TextOverflow.fade,
-                  //                       ),
-                  //                       SizedBox(height: 2.h,),
-                  //                       Flexible(
-                  //                         child: Text(
-                  //                           'Inscripción de un nuevo infante',
-                  //                           style: Theme.of(context).textTheme.bodySmall?.merge(
-                  //                               TextStyle(
-                  //                                   color: Theme.of(context).hintColor,
-                  //                                   height: 1.1,
-                  //                                   fontSize: 13.sp
-                  //                               )
-                  //                           ),
-                  //                           overflow: TextOverflow.fade,
-                  //                           maxLines: 2,
-                  //                           //softWrap: false,
-                  //                           textAlign: TextAlign.center,
-                  //                         ),
-                  //                       )
-                  //                     ],
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         SizedBox(width: 15,),
-                  //         InkWell(
-                  //           onTap: () { },
-                  //           child: Container(
-                  //             margin: EdgeInsets.only(right: 0.w),
-                  //             child: Stack(
-                  //               // overflow: Overflow.visible,
-                  //               clipBehavior: Clip.none,
-                  //               alignment: AlignmentDirectional.topCenter,
-                  //               children: <Widget>[
-                  //                 Container(
-                  //                   margin: EdgeInsets.only(top: 0),
-                  //                   padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 15.w),
-                  //                   width: 165.w,
-                  //                   height: 160.h,
-                  //                   decoration: BoxDecoration(
-                  //                       color: Theme.of(context).primaryColor,
-                  //                       // color: Color(0xFF78BCC4).withOpacity(0.85),
-                  //                       borderRadius: BorderRadius.circular(6.r),
-                  //                       boxShadow: [
-                  //                         BoxShadow(
-                  //                             color: Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
-                  //                       ]
-                  //                   ),
-                  //                   child: Column(
-                  //                     crossAxisAlignment: CrossAxisAlignment.center,
-                  //                     children: <Widget>[
-                  //                       Stack(
-                  //                         alignment: Alignment.center,
-                  //                         children: [
-                  //                           Container(
-                  //                             alignment: Alignment.center,
-                  //                             width: 50.w,
-                  //                             height: 50.w,
-                  //                             decoration: BoxDecoration(
-                  //                               color: Colors.grey.withOpacity(0),
-                  //                               borderRadius: BorderRadius.all(
-                  //                                 Radius.circular(100.r),
-                  //                               ),
-                  //                             ),
-                  //                           ),
-                  //                           Container(
-                  //                             child: Image(
-                  //                               image: AssetImage('assets/images/option_2.png'),
-                  //                               height: 60.h,
-                  //                             ),
-                  //                           ),
-                  //                         ],
-                  //                       ),
-                  //                       SizedBox(height: 8.h,),
-                  //                       Text(
-                  //                         "Seguimiento".toUpperCase(),
-                  //                         style: Theme.of(context).textTheme.bodyMedium?.merge(
-                  //                             TextStyle(
-                  //                                 color: Theme.of(context).colorScheme.secondary,
-                  //                                 fontSize: 18.sp,
-                  //                                 fontWeight: FontWeight.w700,
-                  //                                 // fontFamily: 'Kruda'
-                  //                             )
-                  //                         ),
-                  //                         maxLines: 1,
-                  //                         softWrap: false,
-                  //                         overflow: TextOverflow.fade,
-                  //                       ),
-                  //                       SizedBox(height: 2.h,),
-                  //                       Flexible(
-                  //                         child: Text(
-                  //                           'Seguimiento y monitoreo de infantes',
-                  //                           //style: Theme.of(context).textTheme.bodyText2?.merge(TextStyle(height: 1.1)),
-                  //                           style: Theme.of(context).textTheme.bodySmall?.merge(
-                  //                               TextStyle(
-                  //                                   color: Theme.of(context).hintColor,
-                  //                                   height: 1.1,
-                  //                                   fontSize: 13.sp
-                  //                               )
-                  //                           ),
-                  //                           overflow: TextOverflow.fade,
-                  //                           maxLines: 2,
-                  //                           //softWrap: false,
-                  //                           textAlign: TextAlign.center,
-                  //                         ),
-                  //                       )
-                  //                     ],
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         SizedBox(width: 15,),
-                  //         InkWell(
-                  //           onTap: () { },
-                  //           child: Container(
-                  //             margin: EdgeInsets.only(right: 0.w),
-                  //             child: Stack(
-                  //               // overflow: Overflow.visible,
-                  //               clipBehavior: Clip.none,
-                  //               alignment: AlignmentDirectional.topCenter,
-                  //               children: <Widget>[
-                  //                 Container(
-                  //                   margin: EdgeInsets.only(top: 0),
-                  //                   padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 15.w),
-                  //                   width: 165.w,
-                  //                   height: 160.h,
-                  //                   decoration: BoxDecoration(
-                  //                       color: Theme.of(context).primaryColor,
-                  //                       // color: Color(0xFF78BCC4).withOpacity(0.85),
-                  //                       borderRadius: BorderRadius.circular(6.r),
-                  //                       boxShadow: [
-                  //                         BoxShadow(
-                  //                             color: Theme.of(context).hintColor.withOpacity(0.15), offset: Offset(0, 3), blurRadius: 10)
-                  //                       ]
-                  //                   ),
-                  //                   child: Column(
-                  //                     crossAxisAlignment: CrossAxisAlignment.center,
-                  //                     children: <Widget>[
-                  //                       Stack(
-                  //                         alignment: Alignment.center,
-                  //                         children: [
-                  //                           Container(
-                  //                             alignment: Alignment.center,
-                  //                             width: 50.w,
-                  //                             height: 50.w,
-                  //                             decoration: BoxDecoration(
-                  //                               color: Colors.grey.withOpacity(0.20),
-                  //                               borderRadius: BorderRadius.all(
-                  //                                 Radius.circular(100.r),
-                  //                               ),
-                  //                             ),
-                  //                           ),
-                  //                           Container(
-                  //                             child: Image(
-                  //                               image: AssetImage('assets/images/option_3.png'),
-                  //                               height: 60.h,
-                  //                             ),
-                  //                           ),
-                  //                         ],
-                  //                       ),
-                  //                       SizedBox(height: 8.h,),
-                  //                       Text(
-                  //                         "Incidentes".toUpperCase(),
-                  //                         style: Theme.of(context).textTheme.bodyMedium?.merge(
-                  //                             TextStyle(
-                  //                                 color: Theme.of(context).colorScheme.secondary,
-                  //                                 fontSize: 18.sp,
-                  //                                 fontWeight: FontWeight.w700,
-                  //                                 fontFamily: 'Kruda'
-                  //                             )
-                  //                         ),
-                  //                         maxLines: 1,
-                  //                         softWrap: false,
-                  //                         overflow: TextOverflow.fade,
-                  //                       ),
-                  //                       SizedBox(height: 2.h,),
-                  //                       Flexible(
-                  //                         child: Text(
-                  //                           'Reporte de Indicencias',
-                  //                           //style: Theme.of(context).textTheme.bodyText2?.merge(TextStyle(height: 1.1)),
-                  //                           style: Theme.of(context).textTheme.bodySmall?.merge(
-                  //                               TextStyle(
-                  //                                   color: Theme.of(context).hintColor,
-                  //                                   height: 1.1,
-                  //                                   fontSize: 13.sp
-                  //                               )
-                  //                           ),
-                  //                           overflow: TextOverflow.fade,
-                  //                           maxLines: 2,
-                  //                           //softWrap: false,
-                  //                           textAlign: TextAlign.center,
-                  //                         ),
-                  //                       )
-                  //                     ],
-                  //                   ),
-                  //                 )
-                  //               ],
-                  //             ),
-                  //           ),
-                  //         ),
-                  //         SizedBox(width: 20,),
-                  //
-                  //       ],
-                  //     )
-                  // ),
-                  // SizedBox(height: 0.h,),
-                  // Padding(
-                  //   padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  //   child: ListTile(
-                  //     dense: true,
-                  //     contentPadding: EdgeInsets.symmetric(vertical: 0),
-                  //     leading: Icon(
-                  //       UiIcons.book,
-                  //       color: Theme.of(context).hintColor,
-                  //     ),
-                  //     title: Text(
-                  //       'Información',
-                  //       style: Theme.of(context).textTheme.bodyMedium,
-                  //     ),
-                  //     trailing: Icon(Icons.chevron_right),
-                  //     onTap: () { },
-                  //   ),
-                  // ),
                 ],
               ),
             ),

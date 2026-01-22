@@ -57,7 +57,7 @@ class Child {
   final List<dynamic>? fileUtilityBill;
   final List<dynamic>? fileHomeSketch;
   final List<dynamic>? filePickupAuthorization;
-  final String? avatar;
+  final dynamic avatar;
 
   const Child({
     this.id,
@@ -174,7 +174,7 @@ class Child {
     List<dynamic>? fileUtilityBill,
     List<dynamic>? fileHomeSketch,
     List<dynamic>? filePickupAuthorization,
-    String? avatar,
+    dynamic avatar,
   }) {
     return Child(
       id: id ?? this.id,
@@ -361,8 +361,6 @@ class Child {
       }
     }
 
-    //return (years * 12) + months;
-    
     // Calcular meses completos totales
     int completeMonths = (years * 12) + months;
     

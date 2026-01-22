@@ -43,18 +43,15 @@ class ChildService {
         filePath = file.path;
       }
       else {
-        print('⚠️ Tipo de archivo no reconocido: ${file.runtimeType}');
         return null;
       }
 
       if (filePath == null || filePath.isEmpty) {
-        print('⚠️ Ruta de archivo vacía o nula');
         return null;
       }
 
       final fileObj = File(filePath);
       if (!await fileObj.exists()) {
-        print('⚠️ El archivo no existe en la ruta: $filePath');
         return null;
       }
 
@@ -63,7 +60,6 @@ class ChildService {
         filename: filename,
       );
     } catch (e) {
-      print('❌ Error convirtiendo archivo a MultipartFile: $e');
       return null;
     }
   }
@@ -100,21 +96,11 @@ class ChildService {
     // Añadir el childcare_center_id del storage
     if (childcareCenter?.id != null) {
       formDataMap['childcare_center_id'] = childcareCenter!.id!;
-      print('🏢 DEBUG: childcare_center_id añadido: ${childcareCenter.id}');
     } else {
-      print('⚠️  DEBUG: No se encontró childcare_center_id en storage');
+      // childcare_center_id not found in storage
     }
 
     FormData formData = FormData.fromMap(formDataMap);
-
-    print('🔍 DEBUG: Enviando datos del niño:');
-    formDataMap.forEach((key, value) {
-      if (key == 'childcare_center_id') {
-        print('  🏢 $key: $value'); // Resaltar el childcare_center_id
-      } else {
-        print('     $key: $value');
-      }
-    });
 
     final response = await _api.post('/children',
         data: formData,
@@ -122,12 +108,6 @@ class ChildService {
           'Authorization': 'Bearer $token',
         }
     );
-
-    print('📡 DEBUG: Respuesta de la API:');
-    print('  Status: ${response.statusCode}');
-    print('  Success: ${response.success}');
-    print('  Message: ${response.message}');
-    print('  Data: ${response.data}');
 
     return response;
   }
@@ -140,15 +120,6 @@ class ChildService {
     Map<String, dynamic> formDataMap = await _childToFormData(child, originalFiles: originalFiles);
 
     FormData formData = FormData.fromMap(formDataMap);
-
-    print('🔍 DEBUG: Enviando datos del niño:');
-    formDataMap.forEach((key, value) {
-      if (key == 'childcare_center_id') {
-        print('  🏢 $key: $value'); // Resaltar el childcare_center_id
-      } else {
-        print('     $key: $value');
-      }
-    });
 
     final response = await _api.post('/children/${child.id}', 
         data: formData, 
@@ -166,6 +137,22 @@ class ChildService {
       'Authorization': 'Bearer $token',
     });
     return response;
+  }
+
+  void _processHousingRooms(Map<String, dynamic> data, List<String> rooms) {
+    if (rooms.isNotEmpty) {
+      for (int i = 0; i < rooms.length; i++) {
+        data['housing_rooms[$i]'] = rooms[i];
+      }
+    }
+  }
+
+  void _processHousingUtilities(Map<String, dynamic> data, List<String> utilities) {
+    if (utilities.isNotEmpty) {
+      for (int i = 0; i < utilities.length; i++) {
+        data['housing_utilities[$i]'] = utilities[i];
+      }
+    }
   }
 
   /// Convierte el modelo Child a Map para FormData con TODOS los campos
@@ -224,32 +211,67 @@ class ChildService {
     };
 
     // ✅ Enviar housing_rooms como array
-    if (child.rooms.isNotEmpty) {
-      for (int i = 0; i < child.rooms.length; i++) {
-        data['housing_rooms[$i]'] = child.rooms[i];
-      }
-    }
+    _processHousingRooms(data, child.rooms);
 
     // ✅ Enviar housing_utilities como array
-    if (child.basicServices.isNotEmpty) {
-      for (int i = 0; i < child.basicServices.length; i++) {
-        data['housing_utilities[$i]'] = child.basicServices[i];
+    _processHousingUtilities(data, child.basicServices);
+
+    // ✅ Archivos de inscripción - solo enviar si son nuevos (PlatformFile)
+    await _processEnrollmentFiles(data, child.enrollmentFiles);
+
+    // ✅ Certificado de nacimiento - solo enviar si es nuevo
+    await _processFileField(data, child.fileBirthCertificate, 'file_birth_certificate', 'file_birth_certificate.pdf');
+
+    // ✅ Archivos adicionales - solo enviar si son nuevos
+    await _processFileField(data, child.fileAdmissionRequest, 'file_admission_request', 'file_admission_request.pdf');
+    await _processFileField(data, child.fileCommitment, 'file_commitment', 'file_commitment.pdf');
+    await _processFileField(data, child.fileVaccinationCard, 'file_vaccination_card', 'file_vaccination_card.pdf');
+    await _processFileField(data, child.fileParentId, 'file_parent_id', 'file_parent_id.pdf');
+    await _processFileField(data, child.fileUtilityBill, 'file_utility_bill', 'file_utility_bill.pdf');
+    await _processFileField(data, child.fileHomeSketch, 'file_home_sketch', 'file_home_sketch.pdf');
+    await _processFileField(data, child.filePickupAuthorization, 'file_pickup_authorization', 'file_pickup_authorization.pdf');
+
+    if (child.avatar != null && _isNewFile(child.avatar)) {
+      final multipartFile = await _fileToMultipartFile(child.avatar, 'avatar.jpg');
+      if (multipartFile != null) {
+        data['avatar'] = multipartFile;
       }
     }
 
-    /// Verifica si un archivo es nuevo (PlatformFile) o viene del backend (Map)
-    bool _isNewFile(dynamic file) {
-      // Si es un Map, es un archivo del backend (no se envía en actualización)
-      if (file is Map) return false;
-      // Si es PlatformFile o File, es un archivo nuevo seleccionado
-      return file.toString().contains('PlatformFile') || file.toString().contains('File');
-    }
+    // ✅ Miembros de la familia
+    _processFamilyMembers(data, child.familyMembers);
 
-    // ✅ Archivos de inscripción - solo enviar si son nuevos (PlatformFile)
-    if (child.enrollmentFiles != null && child.enrollmentFiles!.isNotEmpty) {
+    // Limpiar valores null para evitar enviar campos vacíos
+    data.removeWhere((key, value) => value == null || (value is String && value.isEmpty));
+
+    return data;
+  }
+
+  /// Verifica si un archivo es nuevo (PlatformFile) o viene del backend (Map)
+  bool _isNewFile(dynamic file) {
+    // Si es un Map, es un archivo del backend (no se envía en actualización)
+    if (file is Map) return false;
+    // Si es PlatformFile o File, es un archivo nuevo seleccionado
+    return file is PlatformFile || file is File;
+  }
+
+  Future<void> _processFileField(Map<String, dynamic> data, List<dynamic>? files, String fieldName, String fileName) async {
+    if (files != null && files.isNotEmpty) {
+      final file = files[0];
+      if (_isNewFile(file)) {
+        final multipartFile = await _fileToMultipartFile(file, fileName);
+        if (multipartFile != null) {
+          data[fieldName] = multipartFile;
+        }
+      }
+    }
+  }
+
+  Future<void> _processEnrollmentFiles(Map<String, dynamic> data, List<dynamic>? files) async {
+    if (files != null && files.isNotEmpty) {
       List<MultipartFile> enrollmentMultipartFiles = [];
-      for (int i = 0; i < child.enrollmentFiles!.length; i++) {
-        final file = child.enrollmentFiles![i];
+      for (int i = 0; i < files.length; i++) {
+        final file = files[i];
         // Solo procesar archivos nuevos (no los del backend)
         if (_isNewFile(file)) {
           final multipartFile = await _fileToMultipartFile(file, 'enrollment_file_$i.pdf');
@@ -262,100 +284,12 @@ class ChildService {
         data['enrollment_files[]'] = enrollmentMultipartFiles;
       }
     }
+  }
 
-    // ✅ Certificado de nacimiento - solo enviar si es nuevo
-    if (child.fileBirthCertificate != null && child.fileBirthCertificate!.isNotEmpty) {
-      final file = child.fileBirthCertificate![0];
-      if (_isNewFile(file)) {
-        final multipartFile = await _fileToMultipartFile(file, 'file_birth_certificate.pdf');
-        if (multipartFile != null) {
-          data['file_birth_certificate'] = multipartFile;
-        }
-      }
-    }
-
-    // ✅ Archivos adicionales - solo enviar si son nuevos
-    if (child.fileAdmissionRequest != null && child.fileAdmissionRequest!.isNotEmpty) {
-      final file = child.fileAdmissionRequest![0];
-      if (_isNewFile(file)) {
-        final multipartFile = await _fileToMultipartFile(file, 'file_admission_request.pdf');
-        if (multipartFile != null) {
-          data['file_admission_request'] = multipartFile;
-        }
-      }
-    }
-
-    if (child.fileCommitment != null && child.fileCommitment!.isNotEmpty) {
-      final file = child.fileCommitment![0];
-      if (_isNewFile(file)) {
-        final multipartFile = await _fileToMultipartFile(file, 'file_commitment.pdf');
-        if (multipartFile != null) {
-          data['file_commitment'] = multipartFile;
-        }
-      }
-    }
-
-    if (child.fileVaccinationCard != null && child.fileVaccinationCard!.isNotEmpty) {
-      final file = child.fileVaccinationCard![0];
-      if (_isNewFile(file)) {
-        final multipartFile = await _fileToMultipartFile(file, 'file_vaccination_card.pdf');
-        if (multipartFile != null) {
-          data['file_vaccination_card'] = multipartFile;
-        }
-      }
-    }
-
-    if (child.fileParentId != null && child.fileParentId!.isNotEmpty) {
-      final file = child.fileParentId![0];
-      if (_isNewFile(file)) {
-        final multipartFile = await _fileToMultipartFile(file, 'file_parent_id.pdf');
-        if (multipartFile != null) {
-          data['file_parent_id'] = multipartFile;
-        }
-      }
-    }
-
-    if (child.fileUtilityBill != null && child.fileUtilityBill!.isNotEmpty) {
-      final file = child.fileUtilityBill![0];
-      if (_isNewFile(file)) {
-        final multipartFile = await _fileToMultipartFile(file, 'file_utility_bill.pdf');
-        if (multipartFile != null) {
-          data['file_utility_bill'] = multipartFile;
-        }
-      }
-    }
-
-    if (child.fileHomeSketch != null && child.fileHomeSketch!.isNotEmpty) {
-      final file = child.fileHomeSketch![0];
-      if (_isNewFile(file)) {
-        final multipartFile = await _fileToMultipartFile(file, 'file_home_sketch.pdf');
-        if (multipartFile != null) {
-          data['file_home_sketch'] = multipartFile;
-        }
-      }
-    }
-
-    if (child.filePickupAuthorization != null && child.filePickupAuthorization!.isNotEmpty) {
-      final file = child.filePickupAuthorization![0];
-      if (_isNewFile(file)) {
-        final multipartFile = await _fileToMultipartFile(file, 'file_pickup_authorization.pdf');
-        if (multipartFile != null) {
-          data['file_pickup_authorization'] = multipartFile;
-        }
-      }
-    }
-
-    if (child.avatar != null && _isNewFile(child.avatar)) {
-      final multipartFile = await _fileToMultipartFile(child.avatar, 'avatar.jpg');
-      if (multipartFile != null) {
-        data['avatar'] = multipartFile;
-      }
-    }
-
-    // ✅ Miembros de la familia
-    if (child.familyMembers.isNotEmpty) {
-      for (int i = 0; i < child.familyMembers.length; i++) {
-        final member = child.familyMembers[i];
+  void _processFamilyMembers(Map<String, dynamic> data, List<dynamic> familyMembers) {
+    if (familyMembers.isNotEmpty) {
+      for (int i = 0; i < familyMembers.length; i++) {
+        final member = familyMembers[i];
         data['family_members[$i][first_name]'] = member.firstName;
         data['family_members[$i][last_name]'] = member.lastName;
         data['family_members[$i][relationship]'] = _mapKinship(member.relationship);
@@ -375,11 +309,6 @@ class ChildService {
         }
       }
     }
-
-    // Limpiar valores null para evitar enviar campos vacíos
-    data.removeWhere((key, value) => value == null || (value is String && value.isEmpty));
-
-    return data;
   }
 
 

@@ -57,9 +57,12 @@ class _ChildListScreenState extends State<ChildListScreen> {
     super.initState();
     Get.put(ChildListController());
     
+    // Sincronizar el texto del buscador con el controlador
+    final controller = Get.find<ChildListController>();
+    _searchController.text = controller.currentSearchQuery;
+    
     // Listener para el campo de búsqueda
     _searchController.addListener(() {
-      final controller = Get.find<ChildListController>();
       controller.filterChildren(_searchController.text);
     });
   }
@@ -176,7 +179,7 @@ class _ChildListScreenState extends State<ChildListScreen> {
                 ),
               ),
             ),
-            // Buscador siempre visible (excepto cuando está cargando)
+            // Buscador fijado usando SliverPersistentHeader
             GetBuilder<ChildListController>(
               id: 'list_child',
               builder: (controller) {
@@ -185,49 +188,60 @@ class _ChildListScreenState extends State<ChildListScreen> {
                   return SliverToBoxAdapter(child: SizedBox.shrink());
                 }
 
-                // Buscador siempre visible
-                return SliverToBoxAdapter(
-                  child: Column(
-                    children: [
-                      SizedBox(height: 15.h),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, 4), blurRadius: 10)
-                            ],
-                          ),
-                          child: Stack(
-                            alignment: Alignment.centerRight,
-                            children: <Widget>[
-                              TextField(
-                                controller: _searchController,
-                                decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.all(12),
-                                  hintText: 'Buscar ',
-                                  hintStyle: TextStyle(color: Theme.of(context).focusColor.withOpacity(0.8)),
-                                  prefixIcon: Icon(UiIcons.loupe, size: 20, color: Theme.of(context).hintColor),
-                                  border: UnderlineInputBorder(borderSide: BorderSide.none),
-                                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
-                                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
-                                ),
+                return SliverPersistentHeader(
+                  pinned: true,
+                  delegate: _SearchBarDelegate(
+                    child: Container(
+                      height: 70.h,
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, 4), blurRadius: 10)
+                          ],
+                        ),
+                        child: Stack(
+                          alignment: Alignment.centerRight,
+                          children: <Widget>[
+                            TextField(
+                              controller: _searchController,
+                              decoration: InputDecoration(
+                                contentPadding: EdgeInsets.all(12),
+                                hintText: 'Buscar ',
+                                hintStyle: TextStyle(color: Theme.of(context).focusColor.withOpacity(0.8)),
+                                prefixIcon: Icon(UiIcons.loupe, size: 20, color: Theme.of(context).hintColor),
+                                border: UnderlineInputBorder(borderSide: BorderSide.none),
+                                enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+                                focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
                               ),
-                              IconButton(
-                                onPressed: () {
-                                  _scaffoldKey.currentState?.openEndDrawer();
-                                },
-                                icon: Icon(UiIcons.settings_2, size: 20, color: Theme.of(context).hintColor.withOpacity(0.5)),
-                              ),
-                            ],
-                          ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                _scaffoldKey.currentState?.openEndDrawer();
+                              },
+                              icon: Icon(UiIcons.settings_2, size: 20, color: Theme.of(context).hintColor.withOpacity(0.5)),
+                            ),
+                          ],
                         ),
                       ),
-                      SizedBox(height: 20.h),
-                    ],
+                    ),
+                    context: context,
                   ),
+                );
+              },
+            ),
+            // Espacio después del buscador fijado
+            GetBuilder<ChildListController>(
+              id: 'list_child',
+              builder: (controller) {
+                if (controller.loading) {
+                  return SliverToBoxAdapter(child: SizedBox.shrink());
+                }
+                return SliverToBoxAdapter(
+                  child: SizedBox(height: 10.h),
                 );
               },
             ),
@@ -373,5 +387,35 @@ class _ChildListScreenState extends State<ChildListScreen> {
         bottomNavigationBar: NavigationMenu()
       ),
     );
+  }
+}
+
+class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  final BuildContext context;
+
+  _SearchBarDelegate({required this.child, required this.context});
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  double get maxExtent {
+    // Altura: padding vertical (10.h * 2 = 20.h) + altura del TextField con padding (~50.h)
+    // Total: aproximadamente 70.h
+    return 70.h;
+  }
+
+  @override
+  double get minExtent {
+    // Mismo tamaño que maxExtent para que no se encoja (pinned header)
+    return 70.h;
+  }
+
+  @override
+  bool shouldRebuild(_SearchBarDelegate oldDelegate) {
+    return child != oldDelegate.child;
   }
 }

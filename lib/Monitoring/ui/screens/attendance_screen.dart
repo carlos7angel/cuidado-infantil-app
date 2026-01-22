@@ -3,7 +3,6 @@ import 'package:cuidado_infantil/Config/widgets/empty_list.dart';
 import 'package:cuidado_infantil/Monitoring/ui/widgets/filter_attendance_drawer.dart';
 import 'package:cuidado_infantil/Config/general/ui_icons.dart';
 import 'package:cuidado_infantil/Config/widgets/gradient_text.dart';
-import 'package:cuidado_infantil/Config/widgets/header_profile.dart';
 import 'package:cuidado_infantil/Config/widgets/custom_dialog.dart';
 import 'package:cuidado_infantil/Config/widgets/custom_snack_bar.dart';
 import 'package:cuidado_infantil/Intro/ui/widgets/navigation_menu.dart';
@@ -279,7 +278,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> with TickerProvider
               height: circleSize,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: [config.Colors().mainColor(1), config.Colors().mainColor(0.4)],
+                      colors: [config.AppColors.mainColor(1), config.AppColors.mainColor(0.4)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight
                   ),
@@ -583,9 +582,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> with TickerProvider
 
                                   return InkWell(
                                     onTap: () async {
+                                      FocusScope.of(context).unfocus();
                                       await _handleSimpleTap(context, controller, child);
                                     },
                                     onLongPress: () async {
+                                      FocusScope.of(context).unfocus();
                                       await _handleLongPress(context, controller, child);
                                     },
                                     child: Container(
@@ -704,7 +705,7 @@ class _CarouselSliderWrapperState extends State<_CarouselSliderWrapper> {
               widget.controller.carouselController.animateToPage(widget.controller.currentTab);
             }
           } catch (e) {
-            print('⚠️ Error animando carousel: $e');
+            // Error animando carousel
           }
           widget.controller.clearCarouselAnimationFlag();
         });
@@ -725,7 +726,7 @@ class _CarouselSliderWrapperState extends State<_CarouselSliderWrapper> {
               widget.controller.carouselController.animateToPage(widget.controller.currentTab);
             }
           } catch (e) {
-            print('⚠️ Error animando carousel: $e');
+            // Error animando carousel
           }
           widget.controller.clearCarouselAnimationFlag();
         });
@@ -806,3 +807,4 @@ class _CarouselSliderWrapperState extends State<_CarouselSliderWrapper> {
     );
   }
 }
+

@@ -45,8 +45,6 @@ class AttendanceService {
       final weekRange = getWeekRange(selectedDate);
       queryParams['start_date'] = DateFormat('yyyy-MM-dd').format(weekRange['start']!);
       queryParams['end_date'] = DateFormat('yyyy-MM-dd').format(weekRange['end']!);
-      print('📅 DEBUG: Fecha seleccionada: ${DateFormat('yyyy-MM-dd').format(selectedDate)}');
-      print('📅 DEBUG: Rango de semana: ${queryParams['start_date']} a ${queryParams['end_date']}');
     }
     // Si se pasan fechas específicas, usarlas
     else if (startDate != null && endDate != null) {
@@ -61,8 +59,6 @@ class AttendanceService {
       queryParams['end_date'] = DateFormat('yyyy-MM-dd').format(weekRange['end']!);
     }
 
-    print('🌐 DEBUG: Llamando endpoint con queryParams: $queryParams');
-    
     final response = await _api.get(
         '/attendance/childcare-center/${childcareCenter!.id}',
         queryParams: queryParams,
@@ -70,11 +66,6 @@ class AttendanceService {
           'Authorization': 'Bearer $token',
         }
     );
-    
-    print('🌐 DEBUG: Respuesta del endpoint - success: ${response.success}, statusCode: ${response.statusCode}');
-    if (response.data != null) {
-      print('🌐 DEBUG: Respuesta tiene data: ${response.data is Map}');
-    }
     
     return response;
   }
@@ -90,12 +81,6 @@ class AttendanceService {
       errorResponse.statusCode = 400;
       return errorResponse;
     }
-
-    print('🔍 DEBUG: Enviando datos de asistencia:');
-    print('  childcare_center_id: ${childcareCenter.id}');
-    print('  child_id: $childId');
-    print('  status: $attendanceStatus');
-    print('  date: ${DateFormat('yyyy-MM-dd').format(attendanceDate)}');
 
     final response = await _api.put(
         '/attendance/upsert',

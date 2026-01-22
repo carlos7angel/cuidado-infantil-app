@@ -23,6 +23,10 @@ class ChildListController extends GetxController {
   bool _loading = true;
   bool get loading => _loading;
 
+  String _currentSearchQuery = '';
+  String get currentSearchQuery => _currentSearchQuery;
+
+
   @override
   void onInit() {
     loadRooms();
@@ -71,7 +75,6 @@ class ChildListController extends GetxController {
           try {
             return Child.fromMap(json as Map<String, dynamic>);
           } catch (e) {
-            print('⚠️ Error parseando child: $e');
             return null;
           }
         }).whereType<Child>().toList();
@@ -83,18 +86,13 @@ class ChildListController extends GetxController {
           return aPaternal.compareTo(bPaternal);
         });
 
-        print('✅ DEBUG: ${_childList.length} children cargados');
-        print(_childList[0]);
-        
         // Inicializar la lista filtrada con todos los children
         _searchChildList = List.from(_childList);
       } else {
         _searchChildList.clear();
       }
 
-      print('✅ DEBUG: ${_childList.length} children cargados y ordenados');
     } catch (e) {
-      print('❌ ERROR cargando children: $e');
       CustomSnackBar(context: Get.overlayContext!).show(
         message: 'Error al cargar los registros: $e'
       );
@@ -109,7 +107,6 @@ class ChildListController extends GetxController {
     try {
       final response = await ChildcareCenterRepository().getCurrentChildcareCenter();
       if (!response.success) {
-        print('⚠️ No se pudieron cargar los rooms: ${response.message}');
         return;
       }
 
@@ -119,10 +116,9 @@ class ChildListController extends GetxController {
       final roomsData = childcareCenterData['active_rooms']?['data'] as List?;
       if (roomsData != null && roomsData.isNotEmpty) {
         _rooms = roomsData.map((json) => Room.fromMap(json as Map<String, dynamic>)).toList();
-        print('✅ DEBUG: ${_rooms.length} rooms cargados');
       }
     } catch (e) {
-      print('❌ ERROR cargando rooms: $e');
+      // Silently fail
     }
   }
 
@@ -152,8 +148,6 @@ class ChildListController extends GetxController {
     _currentSearchQuery = query;
     _applyFilters();
   }
-
-  String _currentSearchQuery = '';
 
   void _applyFilters() {
     List<Child> filtered = List.from(_childList);

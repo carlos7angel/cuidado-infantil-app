@@ -86,54 +86,6 @@ class IncidentReport {
   });
 
   factory IncidentReport.fromJson(Map<String, dynamic> json) {
-    // Parsear child si existe
-    IncidentChild? child;
-    if (json['child'] != null) {
-      print('🔍 DEBUG: Parseando child...');
-      final childData = json['child'];
-      print('  - childData type: ${childData.runtimeType}');
-      if (childData is Map) {
-        print('  - childData keys: ${childData.keys}');
-        if (childData['data'] != null) {
-          print('  - childData[\'data\'] encontrado');
-          final childDataData = childData['data'];
-          print('  - childData[\'data\'] type: ${childDataData.runtimeType}');
-          if (childDataData is Map<String, dynamic>) {
-            print('  - childData[\'data\'] keys: ${childDataData.keys}');
-            child = IncidentChild.fromJson(childDataData);
-            print('  - Child parseado exitosamente: ${child.fullName}');
-          }
-        } else {
-          print('  - childData[\'data\'] es null');
-        }
-      }
-    } else {
-      print('  - json[\'child\'] es null');
-    }
-
-    // Parsear evidence_files si existen
-    List<EvidenceFile>? evidenceFiles;
-    if (json['evidence_files'] != null) {
-      final evidenceFilesData = json['evidence_files'];
-      if (evidenceFilesData is Map && evidenceFilesData['data'] != null) {
-        final filesList = evidenceFilesData['data'] as List?;
-        if (filesList != null) {
-          evidenceFiles = filesList
-              .map((file) => EvidenceFile.fromJson(file as Map<String, dynamic>))
-              .toList();
-        }
-      }
-    }
-
-    // Parsear evidence_file_ids
-    List<String>? evidenceFileIds;
-    if (json['evidence_file_ids'] != null) {
-      final ids = json['evidence_file_ids'];
-      if (ids is List) {
-        evidenceFileIds = ids.map((id) => id.toString()).toList();
-      }
-    }
-
     return IncidentReport(
       type: json['type']?.toString(),
       id: json['id']?.toString(),
@@ -158,7 +110,7 @@ class IncidentReport {
       witnesses: json['witnesses']?.toString(),
       hasEvidence: json['has_evidence'] == true,
       evidenceDescription: json['evidence_description']?.toString(),
-      evidenceFileIds: evidenceFileIds,
+      evidenceFileIds: _parseEvidenceFileIds(json['evidence_file_ids']),
       evidenceFilesCount: json['evidence_files_count'] is int
           ? json['evidence_files_count']
           : (json['evidence_files_count'] != null ? int.tryParse(json['evidence_files_count'].toString()) : null),
@@ -174,10 +126,48 @@ class IncidentReport {
       createdAt: json['created_at']?.toString(),
       updatedAt: json['updated_at']?.toString(),
       readableCreatedAt: json['readable_created_at']?.toString(),
-      child: child,
-      evidenceFiles: evidenceFiles,
+      child: _parseChild(json['child']),
+      evidenceFiles: _parseEvidenceFiles(json['evidence_files']),
     );
   }
+
+  static IncidentChild? _parseChild(dynamic childData) {
+    if (childData == null) return null;
+    
+    if (childData is Map) {
+      if (childData['data'] != null) {
+        final childDataData = childData['data'];
+        if (childDataData is Map<String, dynamic>) {
+          return IncidentChild.fromJson(childDataData);
+        }
+      }
+    }
+    return null;
+  }
+
+  static List<EvidenceFile>? _parseEvidenceFiles(dynamic evidenceFilesData) {
+    if (evidenceFilesData == null) return null;
+
+    if (evidenceFilesData is Map && evidenceFilesData['data'] != null) {
+      final filesList = evidenceFilesData['data'] as List?;
+      if (filesList != null) {
+        return filesList
+            .map((file) => EvidenceFile.fromJson(file as Map<String, dynamic>))
+            .toList();
+      }
+    }
+    return null;
+  }
+
+  static List<String>? _parseEvidenceFileIds(dynamic ids) {
+    if (ids == null) return null;
+    
+    if (ids is List) {
+      return ids.map((id) => id.toString()).toList();
+    }
+    return null;
+  }
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -259,6 +249,24 @@ class IncidentReport {
         return 'archive';
       default:
         return 'info';
+    }
+  }
+
+  /// Obtiene el color basado en el estado
+  String getStatusColor() {
+    switch (status?.toLowerCase()) {
+      case 'reportado':
+        return '#2196F3'; // Blue
+      case 'en_revision':
+        return '#FF9800'; // Orange
+      case 'cerrado':
+        return '#4CAF50'; // Green
+      case 'escalado':
+        return '#F44336'; // Red
+      case 'archivado':
+        return '#9E9E9E'; // Grey
+      default:
+        return '#9E9E9E';
     }
   }
 }

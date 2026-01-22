@@ -33,12 +33,9 @@ class VaccineDoseInfo {
         try {
           if (json['child_vaccination'] is Map) {
             childVaccination = ChildVaccination.fromJson(json['child_vaccination'] as Map<String, dynamic>);
-          } else {
-            print('⚠️ WARNING: child_vaccination no es un Map, es: ${json['child_vaccination'].runtimeType}');
           }
         } catch (e) {
-          print('❌ ERROR parsing child_vaccination: $e');
-          print('child_vaccination data: ${json['child_vaccination']}');
+          // Ignorar error de parseo
         }
       }
       
@@ -54,8 +51,6 @@ class VaccineDoseInfo {
         monthsUntilAvailable: json['months_until_available'] is int ? json['months_until_available'] as int : (json['months_until_available'] != null ? int.tryParse(json['months_until_available'].toString()) : null),
       );
     } catch (e) {
-      print('❌ ERROR parsing VaccineDoseInfo: $e');
-      print('JSON keys: ${json.keys.toList()}');
       rethrow;
     }
   }

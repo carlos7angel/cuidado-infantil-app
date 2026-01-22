@@ -1,3 +1,4 @@
+import 'package:cuidado_infantil/Config/general/color_utils.dart';
 import 'package:cuidado_infantil/Config/general/ui_icons.dart';
 import 'package:cuidado_infantil/Config/widgets/empty_list.dart';
 import 'package:cuidado_infantil/Config/widgets/gradient_text.dart';
@@ -5,6 +6,7 @@ import 'package:cuidado_infantil/Config/widgets/sliver_app_bar_title.dart';
 import 'package:cuidado_infantil/Config/general/app_config.dart' as config;
 import 'package:cuidado_infantil/Incident/controllers/incident_report_list_controller.dart';
 import 'package:cuidado_infantil/Incident/models/incident_report.dart';
+import 'package:cuidado_infantil/Incident/ui/incident_ui_helpers.dart';
 import 'package:cuidado_infantil/Incident/ui/screens/incident_report_form_screen.dart';
 import 'package:cuidado_infantil/Intro/ui/screens/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -278,9 +280,9 @@ class _IncidentReportListScreenState extends State<IncidentReportListScreen> {
   }
 
   Widget _buildIncidentCard(BuildContext context, IncidentReport report) {
-    final severityColor = _parseColor(report.severityColor ?? '#9E9E9E');
-    final statusIcon = _getStatusIcon(report.status);
-    final severityIcon = _getSeverityIcon(report.severityLevel);
+    final severityColor = ColorUtils.parseColor(report.severityColor ?? '#9E9E9E');
+    final statusIcon = IncidentUiHelpers.getStatusIcon(report.status);
+    final severityIcon = IncidentUiHelpers.getSeverityIcon(report.severityLevel);
     
     return Container(
       margin: EdgeInsets.only(bottom: 20.h),
@@ -424,7 +426,7 @@ class _IncidentReportListScreenState extends State<IncidentReportListScreen> {
                                               Icon(
                                                 statusIcon,
                                                 size: 14.sp,
-                                                color: _getStatusColor(report.status),
+                                                color: ColorUtils.parseColor(report.getStatusColor()),
                                               ),
                                               SizedBox(width: 5.w),
                                               Flexible(
@@ -432,7 +434,7 @@ class _IncidentReportListScreenState extends State<IncidentReportListScreen> {
                                                   report.statusLabel ?? report.status ?? 'N/A',
                                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                     fontWeight: FontWeight.w400,
-                                                    color: _getStatusColor(report.status),
+                                                    color: ColorUtils.parseColor(report.getStatusColor()),
                                                   ),
                                                   overflow: TextOverflow.ellipsis,
                                                 ),
@@ -460,62 +462,6 @@ class _IncidentReportListScreenState extends State<IncidentReportListScreen> {
     );
   }
 
-  Color _parseColor(String colorString) {
-    try {
-      return Color(int.parse(colorString.replaceFirst('#', '0xFF')));
-    } catch (e) {
-      return Colors.grey;
-    }
-  }
-
-  IconData _getSeverityIcon(String? severityLevel) {
-    switch (severityLevel?.toLowerCase()) {
-      case 'leve':
-        return Icons.info_outline;
-      case 'moderado':
-        return Icons.warning_amber_rounded;
-      case 'grave':
-        return Icons.error_outline;
-      case 'critico':
-        return Icons.dangerous;
-      default:
-        return Icons.info_outline;
-    }
-  }
-
-  IconData _getStatusIcon(String? status) {
-    switch (status?.toLowerCase()) {
-      case 'reportado':
-        return Icons.flag_outlined;
-      case 'en_revision':
-        return Icons.search;
-      case 'cerrado':
-        return Icons.check_circle_outline;
-      case 'escalado':
-        return Icons.trending_up;
-      case 'archivado':
-        return Icons.archive_outlined;
-      default:
-        return Icons.info_outline;
-    }
-  }
-
-  Color _getStatusColor(String? status) {
-    switch (status?.toLowerCase()) {
-      case 'reportado':
-        return Colors.blue;
-      case 'en_revision':
-        return Colors.orange;
-      case 'cerrado':
-        return Colors.green;
-      case 'escalado':
-        return Colors.red;
-      case 'archivado':
-        return Colors.grey;
-      default:
-        return Colors.grey;
-    }
-  }
 }
 
 // Delegate para el título fijo en el SliverPersistentHeader

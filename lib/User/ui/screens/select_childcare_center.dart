@@ -1,5 +1,4 @@
 import 'package:cuidado_infantil/Config/general/ui_icons.dart';
-import 'package:cuidado_infantil/Config/widgets/cached_image.dart';
 import 'package:cuidado_infantil/User/controllers/select_childcare_center_controller.dart';
 import 'package:cuidado_infantil/User/models/childcare_center_model.dart';
 import 'package:flutter/material.dart';
@@ -199,7 +198,7 @@ class SelectChildcareCenterScreen extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: config.Colors().gray99Color(1),
+                        color: config.AppColors.gray99Color(1),
                       ),
                     ),
                   if (center.address != null) ...[
@@ -209,7 +208,7 @@ class SelectChildcareCenterScreen extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: config.Colors().gray99Color(0.8),
+                        color: config.AppColors.gray99Color(0.8),
                         fontSize: 11.sp,
                       ),
                     ),
@@ -247,3 +246,4 @@ class SelectChildcareCenterScreen extends StatelessWidget {
     );
   }
 }
+

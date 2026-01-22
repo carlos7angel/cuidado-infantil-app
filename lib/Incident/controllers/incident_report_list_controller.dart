@@ -85,46 +85,19 @@ class IncidentReportListController extends GetxController {
       }
 
       // El API retorna { "data": [...], "meta": { "pagination": {...} } }
-      dynamic responseData = response.data;
-      List<dynamic>? reportsData;
-      Map<String, dynamic>? paginationData;
-
-      if (responseData is Map) {
-        if (responseData.containsKey('data')) {
-          final dataValue = responseData['data'];
-          if (dataValue is List) {
-            reportsData = dataValue;
-          }
-        }
-        if (responseData.containsKey('meta')) {
-          final metaValue = responseData['meta'];
-          if (metaValue is Map && metaValue.containsKey('pagination')) {
-            paginationData = metaValue['pagination'] as Map<String, dynamic>?;
-          }
-        }
-      } else if (responseData is List) {
-        reportsData = responseData;
-      }
-
-      if (reportsData != null && reportsData.isNotEmpty) {
-        final newReports = reportsData.map((json) {
-          try {
-            return IncidentReport.fromJson(json as Map<String, dynamic>);
-          } catch (e) {
-            return null;
-          }
-        }).whereType<IncidentReport>().toList();
-        
+      final parsedData = _parseResponse(response.data);
+      
+      if (parsedData.reports.isNotEmpty) {
         if (reset) {
-          _incidentReports = newReports;
+          _incidentReports = parsedData.reports;
         } else {
-          _incidentReports.addAll(newReports);
+          _incidentReports.addAll(parsedData.reports);
         }
       }
 
       // Actualizar información de paginación
-      if (paginationData != null) {
-        _pagination = PaginationInfo.fromJson(paginationData);
+      if (parsedData.pagination != null) {
+        _pagination = parsedData.pagination;
       }
 
       if (reset) {
@@ -149,6 +122,42 @@ class IncidentReportListController extends GetxController {
       _isLoading = false;
       update(['incident_report_list']);
     }
+  }
+
+  ({List<IncidentReport> reports, PaginationInfo? pagination}) _parseResponse(dynamic responseData) {
+    List<dynamic>? reportsData;
+    PaginationInfo? paginationInfo;
+
+    if (responseData is Map) {
+      if (responseData.containsKey('data')) {
+        final dataValue = responseData['data'];
+        if (dataValue is List) {
+          reportsData = dataValue;
+        }
+      }
+      if (responseData.containsKey('meta')) {
+        final metaValue = responseData['meta'];
+        if (metaValue is Map && metaValue.containsKey('pagination')) {
+          final paginationData = metaValue['pagination'] as Map<String, dynamic>?;
+          if (paginationData != null) {
+            paginationInfo = PaginationInfo.fromJson(paginationData);
+          }
+        }
+      }
+    } else if (responseData is List) {
+      reportsData = responseData;
+    }
+
+    final reports = <IncidentReport>[];
+    if (reportsData != null && reportsData.isNotEmpty) {
+      for (var json in reportsData) {
+        try {
+          reports.add(IncidentReport.fromJson(json as Map<String, dynamic>));
+        } catch (_) {}
+      }
+    }
+
+    return (reports: reports, pagination: paginationInfo);
   }
 
   /// Carga más reportes (siguiente página)

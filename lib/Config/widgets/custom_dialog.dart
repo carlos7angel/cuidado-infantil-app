@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ndialog/ndialog.dart';
 import 'package:cuidado_infantil/Config/general/app_config.dart' as config;
@@ -27,7 +27,7 @@ class CustomDialog {
       ),
     );
 
-    _instance._progressDialog.setLoadingWidget(CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(config.Colors().accentColor(1))));
+    _instance._progressDialog.setLoadingWidget(CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(config.AppColors.accentColor(1))));
 
     return _instance;
   }

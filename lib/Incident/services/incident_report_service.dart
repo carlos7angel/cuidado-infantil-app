@@ -79,18 +79,7 @@ class IncidentReportService {
     };
 
     // Agregar archivos de evidencia si existen
-    if (request.evidenceFiles != null && request.evidenceFiles!.isNotEmpty) {
-      List<MultipartFile> evidenceMultipartFiles = [];
-      for (final file in request.evidenceFiles!) {
-        final multipartFile = await _fileToMultipartFile(file);
-        if (multipartFile != null) {
-          evidenceMultipartFiles.add(multipartFile);
-        }
-      }
-      if (evidenceMultipartFiles.isNotEmpty) {
-        formDataMap['evidence_files[]'] = evidenceMultipartFiles;
-      }
-    }
+    await _addEvidenceFilesToFormData(formDataMap, request.evidenceFiles);
 
     FormData formData = FormData.fromMap(formDataMap);
 
@@ -133,6 +122,24 @@ class IncidentReportService {
       },
     );
     return response;
+  }
+
+  Future<void> _addEvidenceFilesToFormData(
+    Map<String, dynamic> formDataMap,
+    List<PlatformFile>? evidenceFiles,
+  ) async {
+    if (evidenceFiles != null && evidenceFiles.isNotEmpty) {
+      List<MultipartFile> evidenceMultipartFiles = [];
+      for (final file in evidenceFiles) {
+        final multipartFile = await _fileToMultipartFile(file);
+        if (multipartFile != null) {
+          evidenceMultipartFiles.add(multipartFile);
+        }
+      }
+      if (evidenceMultipartFiles.isNotEmpty) {
+        formDataMap['evidence_files[]'] = evidenceMultipartFiles;
+      }
+    }
   }
 }
 

@@ -62,7 +62,6 @@ class AuthService {
       } catch (e) {
         // Si el logout en el servidor falla, no importa porque ya limpiamos localmente
         // Solo registramos el error pero no lo reportamos al usuario
-        print('⚠️ Logout en servidor falló (no crítico): $e');
       }
     }
     

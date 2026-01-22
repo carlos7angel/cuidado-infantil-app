@@ -1,4 +1,4 @@
-import 'package:cuidado_infantil/Auth/controllers/login_controller.dart';
+﻿import 'package:cuidado_infantil/Auth/controllers/login_controller.dart';
 import 'package:cuidado_infantil/Config/controllers/session_controller.dart';
 import 'package:cuidado_infantil/Config/general/ui_icons.dart';
 import 'package:cuidado_infantil/Config/widgets/cached_image.dart';
@@ -145,7 +145,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                                     SizedBox(width: 5.w),
                                                     Text(
                                                       'Educador',
-                                                      style: Theme.of(context).textTheme.bodySmall?.merge(TextStyle(color: config.Colors().gray99Color(1))),
+                                                      style: Theme.of(context).textTheme.bodySmall?.merge(TextStyle(color: config.AppColors.gray99Color(1))),
                                                       overflow: TextOverflow.fade,
                                                       softWrap: false,
                                                     ),
@@ -167,7 +167,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                                     SizedBox(width: 5.w),
                                                     Text(
                                                       controller.user?.email ?? '',
-                                                      style: Theme.of(context).textTheme.bodySmall?.merge(TextStyle(color: config.Colors().gray99Color(1))),
+                                                      style: Theme.of(context).textTheme.bodySmall?.merge(TextStyle(color: config.AppColors.gray99Color(1))),
                                                       overflow: TextOverflow.fade,
                                                       softWrap: false,
                                                     )
@@ -334,3 +334,4 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     );
   }
 }
+

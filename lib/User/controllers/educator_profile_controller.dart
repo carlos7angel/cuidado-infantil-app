@@ -7,6 +7,7 @@ import 'package:cuidado_infantil/User/services/user_service.dart';
 import 'package:cuidado_infantil/User/models/user_model.dart';
 import 'package:cuidado_infantil/Config/controllers/session_controller.dart';
 import 'package:cuidado_infantil/Config/widgets/custom_dialog.dart';
+import 'package:cuidado_infantil/Config/widgets/custom_snack_bar.dart';
 import 'package:intl/intl.dart';
 
 class EducatorProfileController extends GetxController {
@@ -55,13 +56,6 @@ class EducatorProfileController extends GetxController {
       if (overlayContext == null) {
         _isLoading = false;
         update();
-        Get.snackbar(
-          'Error',
-          'No se pudo mostrar el diálogo de carga',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
         return false;
       }
 
@@ -75,12 +69,9 @@ class EducatorProfileController extends GetxController {
           customDialog.hide();
           _isLoading = false;
           update();
-          Get.snackbar(
-            'Error',
-            'No se encontró el ID del educador',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
+          CustomSnackBar(context: overlayContext).show(
+            title: 'Error',
+            message: 'No se encontró el ID del educador',
           );
           return false;
         }
@@ -131,16 +122,13 @@ class EducatorProfileController extends GetxController {
           _isLoading = false;
           update();
           
-          Get.snackbar(
-            'Éxito',
-            'Perfil actualizado correctamente',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
+          CustomSnackBar(context: overlayContext).show(
+            title: 'Éxito',
+            message: 'Perfil actualizado correctamente',
           );
           
-          // Pequeño delay para asegurar que el storage se guarde completamente
-          await Future.delayed(Duration(milliseconds: 300));
+          // Esperar suficiente tiempo para que el usuario lea el mensaje
+          await Future.delayed(Duration(seconds: 3));
           
           // Regresar a la pantalla anterior después de actualizar
           Get.back();
@@ -150,12 +138,9 @@ class EducatorProfileController extends GetxController {
           customDialog.hide();
           _isLoading = false;
           update();
-          Get.snackbar(
-            'Error',
-            response.message.isNotEmpty ? response.message : 'No se pudo actualizar el perfil',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
+          CustomSnackBar(context: overlayContext).show(
+            title: 'Error',
+            message: response.message.isNotEmpty ? response.message : 'No se pudo actualizar el perfil',
           );
           return false;
         }
@@ -163,12 +148,9 @@ class EducatorProfileController extends GetxController {
         customDialog.hide();
         _isLoading = false;
         update();
-        Get.snackbar(
-          'Error',
-          'Error al actualizar: ${e.toString()}',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        CustomSnackBar(context: overlayContext).show(
+          title: 'Error',
+          message: 'Error al actualizar: ${e.toString()}',
         );
         return false;
       }
@@ -191,7 +173,6 @@ class EducatorProfileController extends GetxController {
             userData = dataMap;
           }
         } else {
-          print('⚠️ La respuesta no es un Map válido');
           return;
         }
         
@@ -213,13 +194,12 @@ class EducatorProfileController extends GetxController {
           }
         } catch (e) {
           // SessionController no está inicializado, continuar sin actualizarlo
-          print('⚠️ SessionController no encontrado: $e');
         }
         
         // Actualizar el controlador local
         update();
       } catch (e) {
-        print('❌ Error al refrescar datos del usuario: $e');
+        // Error al refrescar datos del usuario
       }
     }
   }

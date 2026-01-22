@@ -31,15 +31,9 @@ class IncidentReportDetailsController extends GetxController {
     update();
 
     try {
-      print('🔍 DEBUG: Cargando reporte de incidente con ID: $incidentReportId');
       final response = await IncidentReportRepository().getIncidentReportById(
         incidentReportId: incidentReportId,
       );
-
-      print('📥 DEBUG: Respuesta recibida');
-      print('  - success: ${response.success}');
-      print('  - message: ${response.message}');
-      print('  - data type: ${response.data.runtimeType}');
 
       if (!response.success) {
         _error = response.message.isNotEmpty 
@@ -47,66 +41,27 @@ class IncidentReportDetailsController extends GetxController {
             : 'Error al cargar el reporte de incidente';
         _loading = false;
         update();
-        print('❌ DEBUG: Error en la respuesta: $_error');
         CustomSnackBar(context: Get.overlayContext!).show(
           message: _error!,
         );
         return;
       }
 
-      // Parsear la respuesta - puede venir como { "data": { ... } } o directamente como objeto
-      dynamic responseData = response.data;
-      Map<String, dynamic>? dataMap;
+      final incidentReport = _parseIncidentReport(response.data);
 
-      if (responseData is Map) {
-        print('  - responseData es Map');
-        print('  - responseData keys: ${responseData.keys}');
-        
-        if (responseData.containsKey('data')) {
-          dataMap = responseData['data'] as Map<String, dynamic>?;
-          print('  - dataMap obtenido desde responseData[\'data\']');
-        } else {
-          dataMap = responseData as Map<String, dynamic>?;
-          print('  - dataMap obtenido desde responseData completo');
-        }
-      } else {
-        print('  - responseData NO es Map, es: ${responseData.runtimeType}');
-      }
-
-      if (dataMap != null) {
-        print('✅ DEBUG: Parseando IncidentReport desde dataMap');
-        print('  - dataMap keys: ${dataMap.keys}');
-        try {
-          _incidentReport = IncidentReport.fromJson(dataMap);
-          print('✅ DEBUG: IncidentReport cargado exitosamente');
-          print('  - ID: ${_incidentReport?.id}');
-          print('  - Code: ${_incidentReport?.code}');
-          print('  - Child: ${_incidentReport?.child != null ? "Sí" : "No"}');
-          print('  - Evidence Files: ${_incidentReport?.evidenceFiles?.length ?? 0}');
-          _loading = false;
-          update();
-        } catch (e, stackTrace) {
-          print('❌ ERROR parseando IncidentReport: $e');
-          print('  StackTrace: $stackTrace');
-          _error = 'Error al procesar los datos del reporte: $e';
-          _loading = false;
-          update();
-          CustomSnackBar(context: Get.overlayContext!).show(
-            message: _error!,
-          );
-        }
+      if (incidentReport != null) {
+        _incidentReport = incidentReport;
+        _loading = false;
+        update();
       } else {
         _error = 'Formato de respuesta inválido';
         _loading = false;
         update();
-        print('❌ DEBUG: No se pudo obtener dataMap');
         CustomSnackBar(context: Get.overlayContext!).show(
           message: _error!,
         );
       }
-    } catch (e, stackTrace) {
-      print('💥 DEBUG: Error inesperado: $e');
-      print('  StackTrace: $stackTrace');
+    } catch (e) {
       _error = 'Error inesperado: $e';
       _loading = false;
       update();
@@ -114,6 +69,27 @@ class IncidentReportDetailsController extends GetxController {
         message: _error!,
       );
     }
+  }
+
+  IncidentReport? _parseIncidentReport(dynamic responseData) {
+    Map<String, dynamic>? dataMap;
+
+    if (responseData is Map) {
+      if (responseData.containsKey('data')) {
+        dataMap = responseData['data'] as Map<String, dynamic>?;
+      } else {
+        dataMap = responseData as Map<String, dynamic>?;
+      }
+    }
+
+    if (dataMap != null) {
+      try {
+        return IncidentReport.fromJson(dataMap);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   }
 
   Future<void> refreshIncidentReport() async {

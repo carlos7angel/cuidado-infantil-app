@@ -40,7 +40,6 @@ class MonitoringVaccinationTrackingController extends GetxController {
     if (_childId != null) {
       Future.microtask(() => loadVaccinationData());
     } else {
-      print('❌ ERROR: No se encontró child ID');
       _loading = false;
       update(['vaccination_tracking']);
     }
@@ -61,7 +60,6 @@ class MonitoringVaccinationTrackingController extends GetxController {
       
       final overlayContext = Get.overlayContext;
       if (overlayContext == null) {
-        print('⚠️  WARNING: overlayContext no disponible, reintentando...');
         await Future.delayed(Duration(milliseconds: 200));
       }
       
@@ -90,55 +88,14 @@ class MonitoringVaccinationTrackingController extends GetxController {
       }
 
       // Parsear la respuesta
-      dynamic responseData = response.data;
-      Map<String, dynamic>? dataMap;
-
-      if (responseData is Map) {
-        if (responseData.containsKey('data')) {
-          dataMap = responseData['data'] as Map<String, dynamic>?;
-        } else {
-          dataMap = responseData as Map<String, dynamic>?;
-        }
-      }
+      final dataMap = _parseResponseData(response.data);
 
       if (dataMap != null) {
         _vaccinationData = VaccineTrackingResponse.fromJson(dataMap);
         _vaccines = _vaccinationData!.vaccines;
         
-        // Debug: Verificar que las dosis tengan child_vaccination
-        for (var vaccine in _vaccines) {
-          print('🔍 DEBUG: Vacuna ${vaccine.vaccine.name} tiene ${vaccine.doses.length} dosis');
-          for (var dose in vaccine.doses) {
-            if (dose.childVaccination != null) {
-              print('  ✅ Dosis ${dose.dose.doseNumber} tiene child_vaccination: ${dose.childVaccination!.dateApplied}');
-            } else {
-              print('  ⚠️ Dosis ${dose.dose.doseNumber} NO tiene child_vaccination (status: ${dose.status})');
-            }
-          }
-        }
-        
-        // Seleccionar vacuna: preservar la selección si se proporciona un ID, sino seleccionar la primera
-        if (_vaccines.isNotEmpty) {
-          if (preserveSelectedVaccineId != null) {
-            try {
-              _selectedVaccine = _vaccines.firstWhere(
-                (v) => v.vaccine.id == preserveSelectedVaccineId,
-              );
-              // Marcar que se necesita hacer scroll al tab seleccionado
-              _needsScrollToSelected = true;
-            } catch (e) {
-              // Si no se encuentra, seleccionar la primera
-              _selectedVaccine = _vaccines.first;
-            }
-          } else {
-            // Si no hay preservación, seleccionar la primera vacuna
-            _selectedVaccine = _vaccines.first;
-          }
-        }
-        
-        print('✅ DEBUG: Datos de vacunación cargados - ${_vaccines.length} vacunas');
+        _selectInitialVaccine(preserveSelectedVaccineId);
       } else {
-        print('⚠️ WARNING: No se encontraron datos de vacunación');
         _vaccines = [];
         _selectedVaccine = null;
       }
@@ -147,7 +104,6 @@ class MonitoringVaccinationTrackingController extends GetxController {
       update(['vaccination_tracking']);
     } catch (e) {
       customDialog?.hide();
-      print('❌ ERROR cargando datos de vacunación: $e');
       
       // Mostrar error solo si hay contexto disponible
       final overlayContext = Get.overlayContext;
@@ -159,6 +115,29 @@ class MonitoringVaccinationTrackingController extends GetxController {
       _loading = false;
       update(['vaccination_tracking']);
     }
+  }
+
+  Map<String, dynamic>? _parseResponseData(dynamic responseData) {
+    if (responseData is Map) {
+      if (responseData.containsKey('data')) {
+        return responseData['data'] as Map<String, dynamic>?;
+      }
+      return responseData as Map<String, dynamic>?;
+    }
+    return null;
+  }
+
+  void _selectInitialVaccine(String? preserveId) {
+    if (_vaccines.isEmpty) return;
+
+    if (preserveId != null) {
+      try {
+        _selectedVaccine = _vaccines.firstWhere((v) => v.vaccine.id == preserveId);
+        _needsScrollToSelected = true;
+        return;
+      } catch (_) {}
+    }
+    _selectedVaccine = _vaccines.first;
   }
 
   void setSelectedVaccine(VaccineInfo vaccine) {
@@ -180,13 +159,11 @@ class MonitoringVaccinationTrackingController extends GetxController {
     String? notes,
   }) async {
     if (_childId == null) {
-      print('❌ ERROR: No se encontró child ID');
       return false;
     }
 
     final context = Get.overlayContext;
     if (context == null) {
-      print('❌ ERROR: No se pudo obtener overlayContext');
       return false;
     }
 
@@ -216,7 +193,6 @@ class MonitoringVaccinationTrackingController extends GetxController {
       return true;
     } catch (e) {
       customDialog.hide();
-      print('❌ ERROR registrando vacuna: $e');
       CustomSnackBar(context: context).show(
         message: 'Error al registrar la vacuna: $e'
       );
@@ -229,13 +205,11 @@ class MonitoringVaccinationTrackingController extends GetxController {
     required String childVaccinationId,
   }) async {
     if (_childId == null) {
-      print('❌ ERROR: No se encontró child ID');
       return false;
     }
 
     final context = Get.overlayContext;
     if (context == null) {
-      print('❌ ERROR: No se pudo obtener overlayContext');
       return false;
     }
 
@@ -243,22 +217,13 @@ class MonitoringVaccinationTrackingController extends GetxController {
     customDialog.show();
 
     try {
-      print('🔍 DEBUG deleteVaccination controller:');
-      print('  childVaccinationId: $childVaccinationId');
-      
       final response = await MonitoringVaccinationRepository().deleteVaccination(
         childVaccinationId: childVaccinationId,
       );
 
       customDialog.hide();
 
-      print('📡 DEBUG deleteVaccination controller response:');
-      print('  statusCode: ${response.statusCode}');
-      print('  success: ${response.success}');
-      print('  message: ${response.message}');
-
       if (!response.success) {
-        print('❌ DEBUG: La respuesta no fue exitosa');
         CustomSnackBar(context: context).show(
           message: 'No se pudo eliminar la vacuna. ${response.message}'
         );
@@ -269,7 +234,6 @@ class MonitoringVaccinationTrackingController extends GetxController {
       return true;
     } catch (e) {
       customDialog.hide();
-      print('❌ ERROR eliminando vacuna: $e');
       CustomSnackBar(context: context).show(
         message: 'Error al eliminar la vacuna: $e'
       );
@@ -280,7 +244,6 @@ class MonitoringVaccinationTrackingController extends GetxController {
   void showSuccessDialog({String? message}) {
     final context = Get.overlayContext;
     if (context == null) {
-      print('❌ ERROR: No se pudo obtener overlayContext para el modal de éxito');
       return;
     }
     
@@ -312,7 +275,7 @@ class MonitoringVaccinationTrackingController extends GetxController {
             customMessage ?? defaultMessage,
             style: Theme.of(context).textTheme.bodyMedium?.merge(
               TextStyle(
-                color: config.Colors().gray99Color(1),
+                color: config.AppColors.gray99Color(1),
                 fontSize: 14.sp,
               ),
             ),
@@ -351,3 +314,4 @@ class MonitoringVaccinationTrackingController extends GetxController {
     dialog.show(context, dismissable: false);
   }
 }
+

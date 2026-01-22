@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: circleSize,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: [config.Colors().mainColor(0.9), config.Colors().mainColor(0.35)],
+                      colors: [config.AppColors.mainColor(0.9), config.AppColors.mainColor(0.35)],
                       begin: Alignment.center,
                       end: Alignment.bottomRight
                   ),
@@ -209,3 +209,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+

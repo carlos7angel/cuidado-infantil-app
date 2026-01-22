@@ -94,8 +94,6 @@ class AttendanceReportController extends GetxController {
           
           // Ordenar children por apellido paterno, luego materno, luego nombre
           _children.sort(_sortChildren);
-          
-          print('✅ DEBUG: Reporte cargado - ${_children.length} children, ${_dates.length} fechas');
         }
 
         _loading = false;

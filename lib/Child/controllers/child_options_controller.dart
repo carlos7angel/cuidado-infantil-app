@@ -2,7 +2,6 @@ import 'package:cuidado_infantil/Child/models/child.dart';
 import 'package:cuidado_infantil/Child/repositories/child_repository.dart';
 import 'package:cuidado_infantil/Config/models/response_request.dart';
 import 'package:cuidado_infantil/Config/services/storage_service.dart';
-import 'package:cuidado_infantil/Config/widgets/custom_dialog.dart';
 import 'package:cuidado_infantil/Config/widgets/custom_snack_bar.dart';
 import 'package:get/get.dart';
 
@@ -22,15 +21,10 @@ class ChildOptionsController extends GetxController {
     final selectedChild = StorageService.instance.getSelectedChild();
     _childId = selectedChild?.id;
     
-    print('🔍 DEBUG ChildOptionsController.onInit:');
-    print('  selectedChild?.id: ${selectedChild?.id}');
-    print('  _childId: $_childId');
-    
     // Cargar los datos del child
     if (_childId != null) {
       Future.microtask(() => loadChildDetails());
     } else {
-      print('❌ ERROR: No se encontró child ID');
       _isLoading.value = false;
       update();
     }
@@ -53,34 +47,20 @@ class ChildOptionsController extends GetxController {
     
     final context = Get.overlayContext;
     if (context == null) {
-      print('⚠️  WARNING: overlayContext no disponible, reintentando...');
       await Future.delayed(Duration(milliseconds: 200));
     }
     
     final overlayContext = Get.overlayContext;
     if (overlayContext == null) {
-      print('❌ ERROR: No se pudo obtener overlayContext');
       _isLoading.value = false;
       update();
       return;
     }
 
-    // final customDialog = CustomDialog(context: overlayContext);
-    // customDialog.show();
-
     try {
-      print('📡 DEBUG: Llamando a getChildById con ID: $_childId');
       ResponseRequest response = await ChildRepository().getChildById(childId: _childId!);
 
-      print('📥 DEBUG: Respuesta recibida:');
-      print('  success: ${response.success}');
-      print('  message: ${response.message}');
-      print('  statusCode: ${response.statusCode}');
-
-      // customDialog.hide();
-
       if (!response.success) {
-        print('❌ ERROR: La respuesta no fue exitosa');
         final overlayContext = Get.overlayContext;
         if (overlayContext != null) {
           CustomSnackBar(context: overlayContext).show(
@@ -94,39 +74,23 @@ class ChildOptionsController extends GetxController {
 
       // El API retorna { "data": { ... } }
       dynamic responseData = response.data;
-      print('🔍 DEBUG: Analizando estructura de datos:');
-      print('  responseData type: ${responseData.runtimeType}');
       
       Map<String, dynamic>? childData;
       
       if (responseData is Map) {
-        print('  responseData es Map');
-        print('  responseData keys: ${responseData.keys}');
-        
         // Intentar obtener data de diferentes formas
         if (responseData.containsKey('data')) {
           childData = responseData['data'] as Map<String, dynamic>?;
-          print('  childData desde responseData[\'data\']: ${childData != null}');
         } else {
           // Si no hay 'data', puede que el objeto completo sea el child
           childData = responseData as Map<String, dynamic>?;
-          print('  childData desde responseData completo: ${childData != null}');
         }
-      } else {
-        print('  responseData NO es Map, es: ${responseData.runtimeType}');
       }
       
       if (childData != null) {
-        print('✅ DEBUG: Intentando parsear child desde childData');
-        print('  childData keys: ${childData.keys}');
         try {
           _child = Child.fromMap(childData);
-          print('✅ DEBUG: Child cargado exitosamente');
-          print('  ID: ${_child!.id}');
-          print('  Nombre: ${_child!.firstName} ${_child!.paternalLastName}');
-        } catch (e, stackTrace) {
-          print('❌ ERROR parseando Child: $e');
-          print('  StackTrace: $stackTrace');
+        } catch (e) {
           final overlayContext = Get.overlayContext;
           if (overlayContext != null) {
             CustomSnackBar(context: overlayContext).show(
@@ -135,8 +99,6 @@ class ChildOptionsController extends GetxController {
           }
         }
       } else {
-        print('❌ ERROR: childData es null');
-        print('  responseData completo: $responseData');
         final overlayContext = Get.overlayContext;
         if (overlayContext != null) {
           CustomSnackBar(context: overlayContext).show(
@@ -144,11 +106,7 @@ class ChildOptionsController extends GetxController {
           );
         }
       }
-    } catch (e, stackTrace) {
-      print('❌ ERROR EXCEPTION en loadChildDetails:');
-      print('  Error: $e');
-      print('  StackTrace: $stackTrace');
-      // customDialog.hide();
+    } catch (e) {
       final overlayContext = Get.overlayContext;
       if (overlayContext != null) {
         CustomSnackBar(context: overlayContext).show(

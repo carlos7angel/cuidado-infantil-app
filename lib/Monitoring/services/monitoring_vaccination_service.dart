@@ -50,10 +50,6 @@ class MonitoringVaccinationService {
     required String childVaccinationId,
   }) async {
     final token = StorageService.instance.getSession()?.accessToken;
-    print('🔍 DEBUG deleteVaccination:');
-    print('  childVaccinationId: $childVaccinationId');
-    print('  endpoint: /child-vaccinations/$childVaccinationId/delete');
-    print('  token: ${token != null ? "present" : "null"}');
     
     final response = await _api.post(
       '/child-vaccinations/$childVaccinationId/delete',
@@ -62,12 +58,6 @@ class MonitoringVaccinationService {
         'Authorization': 'Bearer $token',
       },
     );
-    
-    print('📡 DEBUG deleteVaccination response:');
-    print('  statusCode: ${response.statusCode}');
-    print('  success: ${response.success}');
-    print('  message: ${response.message}');
-    print('  data: ${response.data}');
     
     return response;
   }

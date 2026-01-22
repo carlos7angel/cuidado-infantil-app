@@ -37,7 +37,6 @@ class LoginController extends GetxController {
     super.onReady();
     // Con configuración fija, siempre hay servidor configurado
     server = ApiService.getFixedServerConfig();
-    print('🔧 DEBUG: LoginController inicializado con servidor fijo: ${server?.host}');
   }
 
   void setEmailValue(String? value) {

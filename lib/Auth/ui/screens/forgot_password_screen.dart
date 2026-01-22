@@ -40,7 +40,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               height: circleSize,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: [config.Colors().mainColor(0.9), config.Colors().mainColor(0.35)],
+                      colors: [config.AppColors.mainColor(0.9), config.AppColors.mainColor(0.35)],
                       begin: Alignment.center,
                       end: Alignment.bottomRight
                   ),
@@ -94,7 +94,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                           Text(
                                             'Ingrese su correo electrónico para recibir un enlace de restablecimiento',
                                             style: Theme.of(context).textTheme.bodySmall?.merge(
-                                              TextStyle(color: config.Colors().gray99Color(1)),
+                                              TextStyle(color: config.AppColors.gray99Color(1)),
                                             ),
                                             textAlign: TextAlign.center,
                                           ),
@@ -184,3 +184,4 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 }
+

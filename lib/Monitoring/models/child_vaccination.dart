@@ -33,8 +33,6 @@ class ChildVaccination {
             : null,
       );
     } catch (e) {
-      print('❌ ERROR parsing ChildVaccination: $e');
-      print('JSON: $json');
       rethrow;
     }
   }

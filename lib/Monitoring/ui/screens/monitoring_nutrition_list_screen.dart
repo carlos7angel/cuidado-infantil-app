@@ -242,7 +242,7 @@ class _MonitoringNutritionListScreenState extends State<MonitoringNutritionListS
                 height: 130.w,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: [config.Colors().mainColor(0.95), config.Colors().mainColor(0.15)],
+                      colors: [config.AppColors.mainColor(0.95), config.AppColors.mainColor(0.15)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight
                   ),
@@ -462,15 +462,15 @@ class _MonitoringNutritionListScreenState extends State<MonitoringNutritionListS
                 ),
                 SizedBox(height: 1.h),
                 // Día numeral
-                Text(
-                  day.toString(),
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    fontSize: 26.sp,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.secondary,
-                    height: 1.0,
+                Center(
+                  child: Text(
+                    '$day',
+                    style: TextStyle(
+                      fontSize: 22.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ],
             ),
@@ -485,39 +485,23 @@ class _MonitoringNutritionListScreenState extends State<MonitoringNutritionListS
 class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
   final BuildContext context;
+  final double height;
 
-  _SliverTitleDelegate({required this.child, required this.context});
-
-  @override
-  double get minExtent {
-    // Calcular el tamaño real: padding vertical (15.h * 2 = 30.h) + altura del contenido (~24.h para icono/texto)
-    // Total aproximado: 54.h
-    return 54.h;
-  }
+  _SliverTitleDelegate({required this.child, required this.context})
+      : height = 60.h; // Aumentado para asegurar espacio suficiente
 
   @override
-  double get maxExtent {
-    // Mismo tamaño que minExtent para que no se encoja (pinned header)
-    return 54.h;
-  }
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return SizedBox(
-      height: maxExtent,
+      height: height,
       child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          boxShadow: overlapsContent
-              ? [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    offset: Offset(0, 2),
-                    blurRadius: 4,
-                  )
-                ]
-              : null,
-        ),
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: child,
       ),
     );
@@ -525,6 +509,7 @@ class _SliverTitleDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(_SliverTitleDelegate oldDelegate) {
-    return child != oldDelegate.child;
+    return true; // Siempre reconstruir para asegurar que el child y las dimensiones se actualicen
   }
 }
+

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChildOptionTile extends StatelessWidget {
@@ -38,8 +38,8 @@ class ChildOptionTile extends StatelessWidget {
                           Theme.of(context).colorScheme.secondary,
                           Theme.of(context).colorScheme.secondary,
                         ],
-                        // config.Colors().mainColor(1),
-                        // config.Colors().mainColor(0.9)],
+                        // config.AppColors.mainColor(1),
+                        // config.AppColors.mainColor(0.9)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight
                     ),
@@ -111,3 +111,4 @@ class ChildOptionTile extends StatelessWidget {
     );
   }
 }
+

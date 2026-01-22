@@ -32,26 +32,17 @@ class IncidentReportEditController extends GetxController {
   }
 
   Future<void> saveIncidentReport() async {
-    print('🚀 DEBUG: Iniciando proceso de actualizar reporte de incidente');
-
     // Marcar que se ha intentado guardar
     _hasAttemptedSave = true;
     update(['form_validation']);
 
     // Validar el formulario
     if (_fbKey.currentState?.saveAndValidate() != true) {
-      print('❌ DEBUG: Formulario no válido');
       return;
     }
 
     final formData = _fbKey.currentState!.value;
-    print('📋 DEBUG: Datos del formulario de edición:');
-    print('  - description: ${formData['description']}');
-    print('  - actions_taken: ${formData['actions_taken']}');
-    print('  - additional_comments: ${formData['additional_comments']}');
-    print('  - follow_up_notes: ${formData['follow_up_notes']}');
-    print('  - authority_notification_details: ${formData['authority_notification_details']}');
-
+    
     _isSaving = true;
     update(['saving']);
 
@@ -60,7 +51,6 @@ class IncidentReportEditController extends GetxController {
     if (overlayContext != null) {
       customDialog = CustomDialog(context: overlayContext);
       customDialog.show();
-      print('⏳ DEBUG: Mostrando dialog de carga');
     }
 
     try {
@@ -72,26 +62,17 @@ class IncidentReportEditController extends GetxController {
         authorityNotificationDetails: formData['authority_notification_details']?.toString(),
       );
 
-      print('📡 DEBUG: Enviando request de actualización al API...');
       final response = await IncidentReportRepository().updateIncidentReport(
         incidentReportId: _incidentReport!.id!,
         request: request,
       );
 
-      print('📥 DEBUG: Respuesta recibida del API de actualización');
-      print('  - success: ${response.success}');
-      print('  - message: ${response.message}');
-
       // Ocultar dialog siempre, sin importar el resultado
       if (customDialog != null) {
         customDialog.hide();
-        print('✅ DEBUG: Dialog ocultado');
       }
 
       if (!response.success) {
-        print('❌ DEBUG: API retornó error');
-        print('  - Error message: ${response.message}');
-
         CustomSnackBar(context: Get.overlayContext!).show(
           message: 'Error al actualizar el reporte: ${response.message}'
         );
@@ -100,17 +81,11 @@ class IncidentReportEditController extends GetxController {
         return;
       }
 
-      print('✅ DEBUG: Reporte actualizado exitosamente');
       _showSuccessDialog();
-    } catch (e, stackTrace) {
-      print('💥 DEBUG: Error inesperado al actualizar reporte');
-      print('  - Error: $e');
-      print('  - StackTrace: $stackTrace');
-
+    } catch (e) {
       // Ocultar dialog en caso de excepción
       if (customDialog != null) {
         customDialog.hide();
-        print('✅ DEBUG: Dialog ocultado después de excepción');
       }
 
       CustomSnackBar(context: Get.overlayContext!).show(
@@ -133,7 +108,6 @@ class IncidentReportEditController extends GetxController {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final context = Get.overlayContext;
       if (context == null) {
-        print('❌ ERROR: No se pudo obtener overlayContext para el modal de éxito');
         return;
       }
 

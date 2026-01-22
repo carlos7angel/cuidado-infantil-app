@@ -41,7 +41,7 @@ class _ServerScreenState extends State<ServerScreen> {
               height: circleSize,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: [config.Colors().mainColor(0.9), config.Colors().mainColor(0.35)],
+                      colors: [config.AppColors.mainColor(0.9), config.AppColors.mainColor(0.35)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight
                   ),
@@ -179,3 +179,4 @@ class _ServerScreenState extends State<ServerScreen> {
     );
   }
 }
+

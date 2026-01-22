@@ -1,3 +1,4 @@
+import 'package:cuidado_infantil/Config/general/color_utils.dart';
 import 'package:cuidado_infantil/Config/general/ui_icons.dart';
 import 'package:cuidado_infantil/Config/widgets/gradient_text.dart';
 import 'package:cuidado_infantil/Config/general/app_config.dart' as config;
@@ -73,8 +74,8 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
         }
 
         final report = controller.incidentReport!;
-        final severityColor = _parseColor(report.severityColor ?? '#9E9E9E');
-        final statusColor = _getStatusColor(report.status);
+        final severityColor = ColorUtils.parseColor(report.severityColor ?? '#9E9E9E');
+        final statusColor = ColorUtils.parseColor(report.getStatusColor());
 
         return Scaffold(
           key: _scaffoldKey,
@@ -402,6 +403,7 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
         child: CachedNetworkImage(
           imageUrl: file.url!,
           height: 150.h,
+          width: double.infinity,
           fit: BoxFit.cover,
           placeholder: (context, url) => Container(
             height: 150.h,
@@ -527,35 +529,6 @@ class _IncidentReportDetailsScreenState extends State<IncidentReportDetailsScree
         ),
       ],
     );
-  }
-
-  Color _parseColor(String hexColor) {
-    try {
-      final hex = hexColor.replaceAll('#', '');
-      if (hex.length == 6) {
-        return Color(int.parse('FF$hex', radix: 16));
-      }
-    } catch (e) {
-      // Si falla, retornar gris por defecto
-    }
-    return Colors.grey;
-  }
-
-  Color _getStatusColor(String? status) {
-    switch (status?.toLowerCase()) {
-      case 'reportado':
-        return Colors.blue;
-      case 'en_revision':
-        return Colors.orange;
-      case 'cerrado':
-        return Colors.green;
-      case 'escalado':
-        return Colors.red;
-      case 'archivado':
-        return Colors.grey;
-      default:
-        return Colors.grey;
-    }
   }
 }
 

@@ -2,9 +2,9 @@ import 'package:cuidado_infantil/Config/general/ui_icons.dart';
 import 'package:cuidado_infantil/Config/widgets/cached_image.dart';
 import 'package:cuidado_infantil/Config/widgets/gradient_text.dart';
 import 'package:cuidado_infantil/Config/general/app_config.dart' as config;
-import 'package:cuidado_infantil/Child/models/child.dart';
 import 'package:cuidado_infantil/Monitoring/controllers/monitoring_nutrition_details_controller.dart';
 import 'package:cuidado_infantil/Monitoring/models/nutritional_assessment.dart';
+import 'package:cuidado_infantil/Monitoring/ui/widgets/dashed_border_painter.dart';
 import 'package:cuidado_infantil/Monitoring/ui/widgets/nutrition_child_details_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -691,56 +691,4 @@ class _MonitoringNutritionDetailsScreenState extends State<MonitoringNutritionDe
 
 }
 
-// Custom Painter para dibujar bordes punteados
-class DashedBorderPainter extends CustomPainter {
-  final Color color;
-  final double strokeWidth;
-  final double radius;
-  final double dashWidth;
-  final double dashSpace;
-
-  DashedBorderPainter({
-    required this.color,
-    required this.strokeWidth,
-    required this.radius,
-    this.dashWidth = 5.0,
-    this.dashSpace = 3.0,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke;
-
-    final path = Path()
-      ..addRRect(RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-        Radius.circular(radius),
-      ));
-
-    final dashPath = _dashPath(path, dashWidth, dashSpace);
-    canvas.drawPath(dashPath, paint);
-  }
-
-  Path _dashPath(Path path, double dashWidth, double dashSpace) {
-    final dashPath = Path();
-    final pathMetrics = path.computeMetrics();
-
-    for (final pathMetric in pathMetrics) {
-      double distance = 0.0;
-      while (distance < pathMetric.length) {
-        dashPath.addPath(
-          pathMetric.extractPath(distance, distance + dashWidth),
-          Offset.zero,
-        );
-        distance += dashWidth + dashSpace;
-      }
-    }
-    return dashPath;
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
+// Moved to lib/Monitoring/ui/widgets/dashed_border_painter.dart

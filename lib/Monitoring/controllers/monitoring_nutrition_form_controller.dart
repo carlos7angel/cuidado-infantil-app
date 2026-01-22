@@ -127,7 +127,7 @@ class MonitoringNutritionFormController extends GetxController {
           Text(
             "La evaluación nutricional ha sido guardada exitosamente.",
             style: Theme.of(Get.overlayContext!).textTheme.bodyMedium?.merge(
-              TextStyle(color: config.Colors().gray99Color(1), fontSize: 13.sp)
+              TextStyle(color: config.AppColors.gray99Color(1), fontSize: 13.sp)
             ),
             textAlign: TextAlign.center,
           ),
@@ -148,7 +148,7 @@ class MonitoringNutritionFormController extends GetxController {
               final listController = Get.find<MonitoringNutritionListController>();
               listController.refreshEvaluations();
             } catch (e) {
-              print('⚠️ No se pudo encontrar el controlador del listado: $e');
+              // Ignorar error si no se encuentra el controlador
             }
             
             Get.offNamed(MonitoringNutritionListScreen.routeName); // Ir al listado
@@ -177,3 +177,4 @@ class MonitoringNutritionFormController extends GetxController {
     _fbKey.currentState?.reset();
   }
 }
+

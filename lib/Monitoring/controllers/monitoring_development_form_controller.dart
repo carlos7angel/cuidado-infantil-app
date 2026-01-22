@@ -81,22 +81,15 @@ class MonitoringDevelopmentFormController extends GetxController {
       // El API retorna: { "data": { "items_by_area": {...} } }
       dynamic responseData = response.data;
       
-      print('🔍 DEBUG: responseData type: ${responseData.runtimeType}');
-      
       if (responseData is Map) {
-        // Pasar el responseData completo al parser, que buscará en data.items_by_area
         _developmentItems = DevelopmentItemsResponse.fromJson(responseData as Map<String, dynamic>);
-        print('✅ DEBUG: Items de desarrollo cargados - Áreas: ${_developmentItems!.itemsByArea.keys.toList()}');
-        print('✅ DEBUG: Total items: ${_developmentItems!.getAllItems().length}');
       } else {
-        print('⚠️ WARNING: responseData no es un Map, es: ${responseData.runtimeType}');
-        _developmentItems = DevelopmentItemsResponse(itemsByArea: {});
+        _developmentItems = DevelopmentItemsResponse.fromJson({});
       }
 
       _loadingItems = false;
       update(['development_form']);
     } catch (e) {
-      print('❌ ERROR cargando items de desarrollo: $e');
       final overlayContext = Get.overlayContext;
       if (overlayContext != null) {
         CustomSnackBar(context: overlayContext).show(
@@ -135,7 +128,6 @@ class MonitoringDevelopmentFormController extends GetxController {
   Future<void> saveEvaluation() async {
     final overlayContext = Get.overlayContext;
     if (overlayContext == null) {
-      print('❌ ERROR: No se pudo obtener overlayContext');
       return;
     }
 
@@ -216,7 +208,7 @@ class MonitoringDevelopmentFormController extends GetxController {
         try {
           createdEvaluation = ChildDevelopmentEvaluation.fromJson(dataMap);
         } catch (e) {
-          print('⚠️ Error parseando evaluación creada: $e');
+          // silently fail
         }
       }
 
@@ -225,7 +217,6 @@ class MonitoringDevelopmentFormController extends GetxController {
 
     } catch (e) {
       customDialog.hide();
-      print('❌ ERROR guardando evaluación: $e');
       CustomSnackBar(context: overlayContext).show(
         message: 'Error inesperado al guardar la evaluación'
       );
@@ -240,13 +231,11 @@ class MonitoringDevelopmentFormController extends GetxController {
       customDialog.hide();
     }
     
-    // Esperar un momento antes de mostrar el modal de éxito
-    Future.delayed(Duration(milliseconds: 300), () {
-      final context = Get.overlayContext;
-      if (context == null) {
-        print('❌ ERROR: No se pudo obtener overlayContext para el modal de éxito');
-        return;
-      }
+    // Mostrar el modal de éxito inmediatamente
+    final context = Get.overlayContext;
+    if (context == null) {
+      return;
+    }
       
       NDialog dialog = NDialog(
         title: Text(
@@ -263,7 +252,7 @@ class MonitoringDevelopmentFormController extends GetxController {
             Text(
               "La evaluación de desarrollo ha sido guardada exitosamente.",
               style: Theme.of(context).textTheme.bodyMedium?.merge(
-                TextStyle(color: config.Colors().gray99Color(1), fontSize: 13.sp)
+                TextStyle(color: config.AppColors.gray99Color(1), fontSize: 13.sp)
               ),
               textAlign: TextAlign.center,
             ),
@@ -280,55 +269,38 @@ class MonitoringDevelopmentFormController extends GetxController {
               // Cerrar el modal de éxito
               Navigator.of(context).pop();
               
-              // Esperar un momento para que el diálogo se cierre completamente
-              await Future.delayed(Duration(milliseconds: 300));
-              
-              // Asegurarse de cerrar cualquier diálogo que pueda estar abierto
-              while (Get.isDialogOpen == true || Navigator.of(context).canPop()) {
-                try {
-                  Navigator.of(context).pop();
-                } catch (e) {
-                  break;
-                }
-              }
-              
               // Recargar la lista antes de navegar
               try {
                 final listController = Get.find<MonitoringDevelopmentListController>();
                 listController.refreshEvaluations();
               } catch (e) {
-                print('⚠️ No se pudo encontrar el controlador del listado: $e');
+                // Ignorar error si no se encuentra el controlador
               }
               
-              // Navegar a la pantalla de detalles
+              // Navegar a la pantalla de detalles asegurando el historial
               if (evaluation != null) {
-                Get.offNamed(
+                // Cerramos el formulario para volver al listado
+                Get.back();
+                // Navegamos al detalle (agregándolo al stack sobre el listado)
+                Get.toNamed(
                   MonitoringDevelopmentDetailsScreen.routeName,
                   arguments: {'evaluation': evaluation},
                 );
               } else {
-                Get.offNamed('/monitoring_development_list');
+                Get.back();
               }
             },
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 15.h),
-              visualDensity: VisualDensity.compact,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-              overlayColor: Colors.grey.withOpacity(0.2),
-            ),
             child: Text(
               "Aceptar",
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.secondary,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w600,
+              style: Theme.of(context).textTheme.bodyMedium?.merge(
+                TextStyle(color: Theme.of(context).primaryColor, fontSize: 13.sp, fontWeight: FontWeight.w600)
               ),
             ),
           ),
         ],
       );
-      dialog.show(context, dismissable: false);
-    });
+
+      dialog.show(context);
   }
 
   void clearForm() {
@@ -338,4 +310,5 @@ class MonitoringDevelopmentFormController extends GetxController {
     _fbKey.currentState?.reset();
   }
 }
+
 

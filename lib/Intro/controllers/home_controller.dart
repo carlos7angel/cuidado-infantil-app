@@ -1,6 +1,5 @@
 import 'package:cuidado_infantil/Config/controllers/session_controller.dart';
 import 'package:cuidado_infantil/User/models/childcare_center_model.dart';
-import 'package:cuidado_infantil/User/models/educator_model.dart';
 import 'package:cuidado_infantil/User/models/user_model.dart';
 import 'package:get/get.dart';
 

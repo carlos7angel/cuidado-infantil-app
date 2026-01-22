@@ -48,7 +48,7 @@ class MainApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: config.Themes.primaryTheme(),
           darkTheme: config.Themes.darkTheme(),
-          themeMode: ThemeMode.light,
+          themeMode: ThemeMode.system,
           locale: Locale('es', 'ES'),
           supportedLocales: [Locale('es', 'ES')],
           localizationsDelegates: [

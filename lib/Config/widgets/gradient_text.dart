@@ -27,7 +27,6 @@ class GradientText extends StatelessWidget {
       style: TextStyle(
           fontSize: size,
           fontWeight: weight,
-          // fontFamily: fontFamily,
           foreground: Paint()..shader = linearGradient
       ),
     );

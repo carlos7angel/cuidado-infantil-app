@@ -59,9 +59,12 @@ class _MonitoringChildListScreenState extends State<MonitoringChildListScreen> {
     super.initState();
     Get.put(ChildListController());
 
+    // Sincronizar el texto del buscador con el controlador
+    final controller = Get.find<ChildListController>();
+    _searchController.text = controller.currentSearchQuery;
+
     // Listener para el campo de búsqueda
     _searchController.addListener(() {
-      final controller = Get.find<ChildListController>();
       controller.filterChildren(_searchController.text);
     });
   }
@@ -127,7 +130,7 @@ class _MonitoringChildListScreenState extends State<MonitoringChildListScreen> {
                             gradient: LinearGradient(
                                 begin: Alignment.bottomLeft,
                                 end: Alignment.topRight,
-                                colors: [Colors.cyan, config.Colors().accentColor(0.5)]
+                                colors: [Colors.cyan, config.AppColors.accentColor(0.5)]
                             )
                         ),
                         child: Container(
@@ -501,3 +504,4 @@ class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
     return child != oldDelegate.child;
   }
 }
+

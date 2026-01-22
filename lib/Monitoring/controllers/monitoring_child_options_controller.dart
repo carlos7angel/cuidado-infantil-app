@@ -6,6 +6,4 @@ class MonitoringChildOptionsController extends GetxController {
   Child? _child;
   Child? get child => _child;
 
-  String? _childId;
-
 }

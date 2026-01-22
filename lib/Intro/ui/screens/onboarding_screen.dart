@@ -1,4 +1,4 @@
-import 'package:cuidado_infantil/Auth/ui/screens/server_screen.dart';
+﻿import 'package:cuidado_infantil/Auth/ui/screens/login_screen.dart';
 import 'package:cuidado_infantil/Intro/controllers/onboarding_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:cuidado_infantil/Config/general/app_config.dart' as config;
@@ -119,7 +119,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ),
                             ),
                           ),
-                          onPressed: () { Get.toNamed(ServerScreen.routeName); },
+                          onPressed: () { Get.toNamed(LoginScreen.routeName); },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
@@ -154,9 +154,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       height: 10.h,
       width: isCurrentPage ? 30.w : 10.w,
       decoration: BoxDecoration(
-          color: isCurrentPage ? config.Colors().mainColor(1) : Colors.black.withOpacity(0.2),
+          color: isCurrentPage ? config.AppColors.mainColor(1) : Colors.black.withOpacity(0.2),
           borderRadius: BorderRadius.all(Radius.circular(15))
       ),
     );
   }
 }
+

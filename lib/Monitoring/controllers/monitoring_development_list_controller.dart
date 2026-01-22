@@ -24,7 +24,6 @@ class MonitoringDevelopmentListController extends GetxController {
     if (_childId != null) {
       Future.microtask(() => loadEvaluations());
     } else {
-      print('❌ ERROR: No se encontró child ID');
       _loading = false;
       update();
     }
@@ -78,20 +77,14 @@ class MonitoringDevelopmentListController extends GetxController {
           try {
             return ChildDevelopmentEvaluation.fromJson(json as Map<String, dynamic>);
           } catch (e) {
-            print('⚠️ Error parseando evaluación de desarrollo: $e');
             return null;
           }
-        }).whereType<ChildDevelopmentEvaluation>().toList();
-        
-        print('✅ DEBUG: ${_evaluations.length} evaluaciones de desarrollo cargadas');
-      } else {
-        print('ℹ️ INFO: No se encontraron evaluaciones de desarrollo');
+        }).whereType<ChildDevelopmentEvaluation>().toList();        
       }
 
       _loading = false;
       update(['development_list']);
     } catch (e) {
-      print('❌ ERROR cargando evaluaciones de desarrollo: $e');
       final overlayContext = Get.overlayContext;
       if (overlayContext != null) {
         CustomSnackBar(context: overlayContext).show(

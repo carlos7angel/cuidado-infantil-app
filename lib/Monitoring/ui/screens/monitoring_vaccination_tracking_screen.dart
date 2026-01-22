@@ -94,7 +94,7 @@ class _MonitoringVaccinationTrackingScreenState extends State<MonitoringVaccinat
                     });
                   }
                 } catch (e) {
-                  print('⚠️ Error haciendo scroll al tab seleccionado: $e');
+                  // silenty fail
                 }
                 controller.clearScrollFlag();
               });
@@ -284,15 +284,6 @@ class _MonitoringVaccinationTrackingScreenState extends State<MonitoringVaccinat
 
   Widget _buildDoseCard(BuildContext context, VaccineDoseInfo doseInfo, VaccineInfo vaccine, int index) {
     final isApplied = doseInfo.childVaccination != null;
-    
-    // Debug: Verificar datos
-    if (isApplied && doseInfo.childVaccination != null) {
-      print('🔍 DEBUG _buildDoseCard: Dosis ${doseInfo.dose.doseNumber} está aplicada');
-      print('  - dateApplied: "${doseInfo.childVaccination?.dateApplied}"');
-      print('  - dateApplied.isEmpty: ${doseInfo.childVaccination?.dateApplied.isEmpty}');
-      print('  - appliedAt: "${doseInfo.childVaccination?.appliedAt}"');
-      print('  - notes: "${doseInfo.childVaccination?.notes}"');
-    }
     
     return Container(
       margin: EdgeInsets.only(bottom: 20.h),
@@ -560,17 +551,12 @@ class _MonitoringVaccinationTrackingScreenState extends State<MonitoringVaccinat
 
   String _formatDate(String dateString) {
     if (dateString.isEmpty) {
-      print('⚠️ WARNING: dateString está vacío');
       return 'No especificada';
     }
     try {
-      print('🔍 DEBUG _formatDate: Intentando formatear fecha "$dateString"');
       final date = DateFormat('yyyy-MM-dd').parse(dateString);
-      final formatted = DateFormat('dd/MM/yyyy').format(date);
-      print('✅ DEBUG _formatDate: Fecha formateada exitosamente: "$formatted"');
-      return formatted;
+      return DateFormat('dd/MM/yyyy').format(date);
     } catch (e) {
-      print('❌ ERROR formateando fecha: "$dateString" - $e');
       return dateString;
     }
   }

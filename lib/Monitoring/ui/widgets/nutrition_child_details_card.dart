@@ -1,7 +1,5 @@
 import 'package:cuidado_infantil/Child/models/child.dart';
 import 'package:cuidado_infantil/Config/general/ui_icons.dart';
-import 'package:cuidado_infantil/Config/widgets/cached_image.dart';
-import 'package:cuidado_infantil/Config/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -14,26 +12,12 @@ class NutritionChildDetailsCard extends StatelessWidget {
     required this.child,
   });
 
-  // Color según género: rosado para mujer, azul para hombre
-  Color _getGenderColor(String gender) {
-    switch (gender.toLowerCase()) {
-      case 'femenino':
-        return Colors.pinkAccent;
-      case 'masculino':
-        return Colors.blueAccent;
-      default:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final childcareCenter = StorageService.instance.getChildcareCenter();
     final fullName = child.getFullName();
     final birthDateFormatted = child.birthDate != null 
         ? DateFormat('dd/MM/yyyy').format(child.birthDate!)
         : 'No especificada';
-    final centerName = childcareCenter?.name ?? 'Centro de Cuidado';
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0.h),

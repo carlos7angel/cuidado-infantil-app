@@ -1,7 +1,6 @@
-import 'package:cuidado_infantil/Config/general/ui_icons.dart';
+﻿import 'package:cuidado_infantil/Config/general/ui_icons.dart';
 import 'package:cuidado_infantil/Config/widgets/empty_list.dart';
 import 'package:cuidado_infantil/Config/widgets/gradient_text.dart';
-import 'package:cuidado_infantil/Config/widgets/header_profile.dart';
 import 'package:cuidado_infantil/Config/general/app_config.dart' as config;
 import 'package:cuidado_infantil/Monitoring/controllers/attendance_report_controller.dart';
 import 'package:cuidado_infantil/Monitoring/models/attendance_child.dart';
@@ -190,7 +189,7 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
               height: circleSize,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [config.Colors().mainColor(1), config.Colors().mainColor(0.4)],
+                  colors: [config.AppColors.mainColor(1), config.AppColors.mainColor(0.4)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight
                 ),
@@ -527,4 +526,5 @@ class _AttendanceReportScreenState extends State<AttendanceReportScreen> {
     );
   }
 }
+
 

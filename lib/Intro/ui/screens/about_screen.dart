@@ -1,10 +1,8 @@
 import 'package:cuidado_infantil/Config/general/env.dart';
 import 'package:cuidado_infantil/Config/general/ui_icons.dart';
-import 'package:cuidado_infantil/Config/widgets/gradient_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:cuidado_infantil/Config/general/app_config.dart' as config;
 
 class AboutScreen extends StatelessWidget {
 

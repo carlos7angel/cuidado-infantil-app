@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:cuidado_infantil/Auth/models/server_model.dart';
 import 'package:cuidado_infantil/Auth/models/session_model.dart';
 import 'package:cuidado_infantil/Auth/repositories/auth_repository.dart';
@@ -9,7 +8,6 @@ import 'package:cuidado_infantil/Config/models/response_request.dart';
 import 'package:cuidado_infantil/Config/services/storage_service.dart';
 import 'package:dio/dio.dart' hide Response;
 import 'package:dio/dio.dart' as dio_lib show Response;
-import 'package:dio/io.dart';
 import 'package:get/get.dart';
 
 class ApiService {
@@ -20,31 +18,13 @@ class ApiService {
   factory ApiService() => _instance;
 
   final Dio dioRaw = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 30),  // Reducido de 1000 a 30 segundos
-    receiveTimeout: const Duration(seconds: 30),  // Reducido de 1000 a 30 segundos
+    connectTimeout: const Duration(seconds: 30),
+    receiveTimeout: const Duration(seconds: 30),
     contentType: Headers.jsonContentType,
     headers: {Headers.acceptHeader: Headers.jsonContentType},
-  ))..httpClientAdapter = IOHttpClientAdapter(
-    createHttpClient: () {
-      final client = HttpClient();
-      // SOLO PARA DESARROLLO/STAGING - NO USAR EN PRODUCCIÓN
-      // Ignora la validación de certificados SSL
-      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-      return client;
-    },
-  );
+  ));
 
-  /// Configura el HttpClientAdapter para ignorar la validación de certificados SSL
-  /// SOLO PARA DESARROLLO/STAGING - NO USAR EN PRODUCCIÓN
-  void _configureHttpClientAdapter(Dio dioInstance) {
-    if (dioInstance.httpClientAdapter is IOHttpClientAdapter) {
-      (dioInstance.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
-        final client = HttpClient();
-        client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
-        return client;
-      };
-    }
-  }
+
 
   late Dio dio;
 
@@ -63,33 +43,20 @@ class ApiService {
 
   /// Construye la URL base completa desde un Server object
   String _buildBaseUrl(Server server) {
-    print('🏗️ DEBUG: _buildBaseUrl - Construyendo URL base:');
-    print('  - server.host: ${server.host}');
-    print('  - server.apiVersion: ${server.apiVersion}');
-
     String baseUrl;
     if (server.apiVersion != null && server.apiVersion!.isNotEmpty) {
       baseUrl = '${server.host}/${server.apiVersion}';
     } else {
       baseUrl = server.host!;
     }
-
-    print('  - URL base resultante: $baseUrl');
     return baseUrl;
   }
 
   /// Inicializa la configuración usando las constantes fijas de env.dart
   void init() {
-    print('🚀 DEBUG: ApiService.init - Inicializando ApiService con configuración fija...');
-
     final server = getFixedServerConfig();
 
-    print('⚙️ DEBUG: Servidor configurado desde env.dart:');
-    print('  - Host: ${server.host}');
-    print('  - ApiVersion: ${server.apiVersion}');
-
     String baseUrl = _buildBaseUrl(server);
-      print('✅ DEBUG: Base URL configurada: $baseUrl');
 
     dio = Dio(BaseOptions(
       baseUrl: baseUrl,
@@ -98,15 +65,11 @@ class ApiService {
       contentType: Headers.jsonContentType,
       headers: {Headers.acceptHeader: Headers.jsonContentType},
     ));
-    _configureHttpClientAdapter(dio);
 
     // Configurar el token inicial si existe
     final session = StorageService.instance.getSession();
     if (session?.accessToken != null) {
       setAuthToken(session!.accessToken!);
-      print('🔑 DEBUG: Token de acceso configurado');
-    } else {
-      print('⚠️ DEBUG: No hay token de acceso en storage');
     }
 
     // Agregar el interceptor para manejo automático de tokens y refresh
@@ -114,22 +77,12 @@ class ApiService {
     bool hasAuthInterceptor = dio.interceptors.any((interceptor) => interceptor is _AuthInterceptor);
     if (!hasAuthInterceptor) {
       dio.interceptors.add(_AuthInterceptor(this));
-      print('🛡️ DEBUG: AuthInterceptor agregado');
-    } else {
-      print('🛡️ DEBUG: AuthInterceptor ya existe');
     }
-
-    print('✅ DEBUG: ApiService inicializado correctamente');
   }
 
   /// Actualiza la URL base (lectura + escritura)
   void updateBaseUrl(Server server) {
-    print('🔄 DEBUG: ApiService.updateBaseUrl - Actualizando URL base');
-    print('  - Nuevo server: host=${server.host}, apiVersion=${server.apiVersion}');
-
     final newBaseUrl = _buildBaseUrl(server);
-    print('  - Nueva base URL: $newBaseUrl');
-    print('  - URL anterior: ${dio.options.baseUrl}');
 
     dio.options.baseUrl = newBaseUrl;
 
@@ -137,17 +90,13 @@ class ApiService {
     bool hasAuthInterceptor = dio.interceptors.any((interceptor) => interceptor is _AuthInterceptor);
     if (!hasAuthInterceptor) {
       dio.interceptors.add(_AuthInterceptor(this));
-      print('🛡️ DEBUG: AuthInterceptor agregado después de actualizar URL');
     }
 
     // Restaurar el token si existe después de actualizar la URL
     final session = StorageService.instance.getSession();
     if (session?.accessToken != null) {
       setAuthToken(session!.accessToken!);
-      print('🔑 DEBUG: Token restaurado después de actualizar URL');
     }
-
-    print('✅ DEBUG: URL base actualizada correctamente');
   }
 
   void setAuthToken(String token) {
@@ -179,12 +128,6 @@ class ApiService {
     dynamic data,
     Map<String, dynamic>? headers,
   }) async {
-    print('📤 DEBUG: ApiService.post - POST request:');
-    print('  - Path: $path');
-    print('  - Full URL: ${dio.options.baseUrl}$path');
-    print('  - Data: $data');
-    print('  - Headers: $headers');
-
     return _handleRequest(() => dio.post(
       path,
       data: data,
@@ -220,12 +163,7 @@ class ApiService {
 
   /// GET request to raw url
   Future<ResponseRequest> getRaw(String fullUrl) async {
-    print('🌐 DEBUG: ApiService.getRaw - Iniciando petición a: $fullUrl');
-    print('⏱️  DEBUG: Timeout configurado: connectTimeout=${dioRaw.options.connectTimeout}, receiveTimeout=${dioRaw.options.receiveTimeout}');
-
     final response = await _handleRequest(() => dioRaw.get(fullUrl));
-
-    print('📨 DEBUG: ApiService.getRaw - Respuesta recibida: success=${response.success}, statusCode=${response.statusCode}');
     return response;
   }
 
@@ -235,13 +173,7 @@ class ApiService {
   Future<ResponseRequest> _handleRequest(Future<dio_lib.Response> Function() request) async {
     ResponseRequest responseRequest = ResponseRequest();
     try {
-      print('🔄 DEBUG: ApiService._handleRequest - Ejecutando petición...');
       dio_lib.Response response = await request();
-
-      print('📨 DEBUG: ApiService._handleRequest - Respuesta HTTP recibida:');
-      print('  - Status Code: ${response.statusCode}');
-      print('  - Headers: ${response.headers}');
-      print('  - Data: ${response.data}');
 
       responseRequest.statusCode = response.statusCode ?? 0;
 
@@ -254,7 +186,6 @@ class ApiService {
           responseRequest.data = response.data is Map ? response.data : {'data': response.data};
         }
         responseRequest.message = 'Success';  // Asignar mensaje de éxito
-        print('✅ DEBUG: ApiService._handleRequest - Respuesta exitosa');
       } else {
         responseRequest.success = false;
         final data = response.data;
@@ -263,23 +194,12 @@ class ApiService {
         } else {
           responseRequest.message = 'Error en la solicitud';
         }
-        print('⚠️  DEBUG: ApiService._handleRequest - Respuesta con error de servidor');
       }
     } on DioException catch (e) {
-      print('❌ DEBUG: ApiService._handleRequest - DioException capturada:');
-      print('  - Type: ${e.type}');
-      print('  - Message: ${e.message}');
-      print('  - Response Status: ${e.response?.statusCode}');
-      print('  - Response Data: ${e.response?.data}');
-
       responseRequest.success = false;
       responseRequest.statusCode = e.response?.statusCode ?? 0;
       responseRequest.message = _handleDioError(e);
     } catch (e) {
-      print('💥 DEBUG: ApiService._handleRequest - Error inesperado:');
-      print('  - Error: $e');
-      print('  - Runtime Type: ${e.runtimeType}');
-
       responseRequest.success = false;
       responseRequest.statusCode = 0;
       responseRequest.message = 'Error inesperado: ${e.toString()}';
@@ -560,9 +480,8 @@ class _AuthInterceptor extends Interceptor {
     }
     
     // Redirigir al login usando GetX
-    // Nota: Esto debería manejarse en un lugar centralizado, no aquí
+    // Nota: Esto debería manejarse en un lugar centralizado
     // Por ahora solo limpiamos la sesión
-    print('⚠️ Sesión expirada. Se requiere nuevo login.');
     
     // Redirigir al login usando GetX
     // Nota: Se redirige solo si no estamos ya en el login
@@ -572,7 +491,6 @@ class _AuthInterceptor extends Interceptor {
       }
     } catch (e) {
       // Si falla la navegación, continuar
-      print('⚠️ Error al redirigir al login: $e');
     }
   }
 }

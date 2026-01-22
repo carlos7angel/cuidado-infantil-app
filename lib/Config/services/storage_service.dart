@@ -73,91 +73,75 @@ class StorageService {
   /// Selected child data ------------------------------------------------------------
 
   Future<void> setSelectedChild(Child child) async {
-    print('💾 DEBUG: Guardando child en storage:');
-    print('  ID: ${child.id}');
-    print('  FirstName: ${child.firstName}');
-    print('  Avatar: ${child.avatar}');
-    print('  Nombre: ${child.firstName} ${child.paternalLastName}');
     await storage.write('selected_child', jsonEncode(child.toMap()));
     await storage.save();
-    print('✅ DEBUG: Child guardado exitosamente');
   }
 
   Child? getSelectedChild() {
     String? value = storage.read('selected_child');
-    print('📖 DEBUG: Leyendo child desde storage:');
-    print('  value existe: ${value != null}');
     if (value != null) {
       try {
         final decoded = jsonDecode(value);
-        print('  decoded type: ${decoded.runtimeType}');
-        print('  decoded keys: ${decoded is Map ? decoded.keys : 'N/A'}');
-        
-        // El child guardado desde toMap() tiene una estructura diferente
-        // Necesitamos convertir strings ISO8601 a DateTime y usar fromForm()
-        Map<String, dynamic> childMap;
-        if (decoded is Map) {
-          childMap = Map<String, dynamic>.from(decoded);
-          
-          // Convertir fechas de string ISO8601 a DateTime
-          if (childMap['birth_date'] is String) {
-            try {
-              childMap['birth_date'] = DateTime.parse(childMap['birth_date']);
-            } catch (e) {
-              print('⚠️  WARNING: Error parseando birth_date: $e');
-              childMap['birth_date'] = null;
-            }
-          }
-          
-          if (childMap['enrollment_date'] is String) {
-            try {
-              childMap['enrollment_date'] = DateTime.parse(childMap['enrollment_date']);
-            } catch (e) {
-              print('⚠️  WARNING: Error parseando enrollment_date: $e');
-              childMap['enrollment_date'] = null;
-            }
-          }
-          
-          // Convertir family_members de lista de mapas a formato esperado
-          if (childMap['family_members'] is List) {
-            // Parsear fechas en family_members si existen
-            final familyMembers = childMap['family_members'] as List;
-            for (var member in familyMembers) {
-              if (member is Map && member['birth_date'] is String) {
-                try {
-                  member['birth_date'] = DateTime.parse(member['birth_date']);
-                } catch (e) {
-                  member['birth_date'] = null;
-                }
-              }
-            }
-          }
-          
-          // Asegurar que las listas estén en el formato correcto
-          if (childMap['rooms'] is! List) {
-            childMap['rooms'] = [];
-          }
-          if (childMap['basic_services'] is! List) {
-            childMap['basic_services'] = [];
-          }
-          
-          final child = Child.fromForm(childMap, id: childMap['id']?.toString());
-          print('✅ DEBUG: Child recuperado exitosamente:');
-          print('  ID: ${child.id}');
-          print('  Nombre: ${child.firstName} ${child.paternalLastName}');
-          return child;
-        } else {
-          print('❌ ERROR: decoded no es un Map');
-          return null;
-        }
-      } catch (e, stackTrace) {
-        print('❌ ERROR parseando child desde storage: $e');
-        print('  StackTrace: $stackTrace');
+        return _parseChildData(decoded);
+      } catch (e) {
         return null;
       }
     }
-    print('⚠️  WARNING: No hay child guardado en storage');
     return null;
+  }
+
+  Child? _parseChildData(dynamic decoded) {
+    // El child guardado desde toMap() tiene una estructura diferente
+    // Necesitamos convertir strings ISO8601 a DateTime y usar fromForm()
+    if (decoded is! Map) return null;
+
+    final childMap = Map<String, dynamic>.from(decoded);
+    
+    // Convertir fechas de string ISO8601 a DateTime
+    _parseDateFields(childMap);
+    
+    // Convertir family_members
+    _parseFamilyMembers(childMap);
+    
+    // Asegurar listas
+    if (childMap['rooms'] is! List) childMap['rooms'] = [];
+    if (childMap['basic_services'] is! List) childMap['basic_services'] = [];
+    
+    return Child.fromForm(childMap, id: childMap['id']?.toString());
+  }
+
+  void _parseDateFields(Map<String, dynamic> map) {
+    if (map['birth_date'] is String) {
+      try {
+        map['birth_date'] = DateTime.parse(map['birth_date']);
+      } catch (_) {
+        map['birth_date'] = null;
+      }
+    }
+    
+    if (map['enrollment_date'] is String) {
+      try {
+        map['enrollment_date'] = DateTime.parse(map['enrollment_date']);
+      } catch (_) {
+        map['enrollment_date'] = null;
+      }
+    }
+  }
+
+  void _parseFamilyMembers(Map<String, dynamic> childMap) {
+    if (childMap['family_members'] is List) {
+      final familyMembers = childMap['family_members'] as List;
+      for (var member in familyMembers) {
+        if (member is Map && member['birth_date'] is String) {
+          try {
+            member['birth_date'] = DateTime.parse(member['birth_date']);
+          } catch (_) {
+            member['birth_date'] = null;
+          }
+        }
+      }
+    }
+
   }
 
   Future<void> clearSelectedChild() async {

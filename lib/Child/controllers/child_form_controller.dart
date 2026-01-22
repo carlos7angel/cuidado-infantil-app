@@ -165,7 +165,7 @@ class ChildFormController extends GetxController{
     // Usar el servicio para cargar rooms
     final response = await ChildcareCenterRepository().getCurrentChildcareCenter();
     if (!response.success) {
-      CustomSnackBar(context: Get.overlayContext!).show(message: 'No se pudieron cargar los grups. ${response.message}');
+      CustomSnackBar(context: Get.overlayContext!).show(message: 'No se pudieron cargar los grupos. ${response.message}');
       return;
     }
 
@@ -235,13 +235,13 @@ class ChildFormController extends GetxController{
       final roomExists = _rooms.any((room) => room.id == roomId);
       if (!roomExists) {
         // Si el room no existe en la lista, remover el valor inicial temporalmente
-        // El usuario tendrá que seleccionarlo manualmente
-        print('⚠️ WARNING: room_id $roomId no encontrado en la lista de rooms');
-        _initialValues['room_id'] = null;
+      // El usuario tendrá que seleccionarlo manualmente
+      _initialValues['room_id'] = null;
       }
     }
 
-    // Aplica los valores al formulario cuando esté disponible.
+    // Aplica los valores al formulario cuando está disponible.
+    // Maneja reintentos si el formulario no está listo inmediatamente.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_fbKey.currentState != null && _initialValues.isNotEmpty) {
         _fbKey.currentState?.patchValue(_initialValues);
@@ -500,7 +500,6 @@ class ChildFormController extends GetxController{
   Child? collectFormData() {
     final formState = _fbKey.currentState;
     if (formState == null) {
-      print('❌ DEBUG: FormBuilderState es null');
       return null;
     }
 
@@ -515,7 +514,7 @@ class ChildFormController extends GetxController{
     // Obtener valores del formulario actual (solo del tab visible)
     final formValues = Map<String, dynamic>.from(formState.value);
     
-    // Actualizar _currentChild con los valores del formulario actual
+    // Actualizar el currentChild con los datos del formulario actual
     // Esto asegura que los campos del tab actual se actualicen
     // Los campos de otros tabs se preservan porque copyWith usa null para preservar
     _updateChildFromFormData(formValues);
@@ -526,31 +525,6 @@ class ChildFormController extends GetxController{
       id: childId ?? _currentChild!.id,
     );
 
-    print('📝 DEBUG: Child recopilado desde _currentChild:');
-    print('  ID: ${updatedChild.id}');
-    print('  Nombre: ${updatedChild.firstName} ${updatedChild.paternalLastName}');
-    print('  Peso: ${updatedChild.weight ?? "null"}');
-    print('  Altura: ${updatedChild.height ?? "null"}');
-    print('  Guardian Type: ${updatedChild.guardianType ?? "null"}');
-    print('  Housing Type: ${updatedChild.housingType ?? "null"}');
-    print('  Housing Tenure: ${updatedChild.housingTenure ?? "null"}');
-    print('  Housing Structure: ${updatedChild.housingStructure ?? "null"}');
-    print('  Floor Type: ${updatedChild.floorType ?? "null"}');
-    print('  Finishing Type: ${updatedChild.finishingType ?? "null"}');
-    print('  Bedrooms: ${updatedChild.bedrooms ?? "null"}');
-    print('  Transport Type: ${updatedChild.transportMode ?? "null"}');
-    print('  Travel Time: ${updatedChild.travelTime ?? "null"}');
-    print('  Rooms: ${updatedChild.rooms}');
-    print('  Basic Services: ${updatedChild.basicServices}');
-    print('  Insurance Details: ${updatedChild.insuranceDetails ?? "null"}');
-    print('  Allergies Details: ${updatedChild.allergiesDetails ?? "null"}');
-    print('  Medical Treatment Details: ${updatedChild.medicalTreatmentDetails ?? "null"}');
-    print('  Psychological Treatment Details: ${updatedChild.psychologicalTreatmentDetails ?? "null"}');
-    print('  Disease Details: ${updatedChild.diseaseDetails ?? "null"}');
-    print('  Other Observations: ${updatedChild.otherConsiderations ?? "null"}');
-    print('  Miembros familia: ${updatedChild.familyMembers.length}');
-    print('  Grupo: ${updatedChild.roomId}');
-
     return updatedChild;
   }
 
@@ -559,125 +533,44 @@ class ChildFormController extends GetxController{
   Map<String, dynamic> _validateAllFieldsWithTabs() {
     final formState = _fbKey.currentState;
     if (formState == null) {
-      print('❌ DEBUG: FormBuilderState es null');
-      return {'isValid': false, 'tabsWithErrors': []};
+      return {'isValid': false, 'tabsWithErrors': <int>[]};
     }
 
     // Guardar todos los valores primero
     formState.save();
 
-    print('🔍 DEBUG: Iniciando validación de todos los campos');
-    print('📋 DEBUG: Total de campos registrados: ${formState.fields.length}');
-    print('📋 DEBUG: Campos registrados: ${formState.fields.keys.toList()}');
-
-    // Validar TODOS los campos manualmente, incluso los de tabs no visibles
     Set<int> tabsWithErrors = {};
     bool hasErrors = false;
-    
-    // Primero, intentar usar saveAndValidate para validar todo
-    final globalValid = formState.saveAndValidate();
-    print('🔍 DEBUG: saveAndValidate() retornó: $globalValid');
     
     // Iterar sobre todos los campos conocidos de todos los tabs
     for (int tabIndex = 0; tabIndex < _tabFields.length; tabIndex++) {
       final tabFields = _tabFields[tabIndex]!;
       bool tabHasErrors = false;
       
-      print('🔍 DEBUG: Validando tab $tabIndex con ${tabFields.length} campos');
-      
       for (String fieldName in tabFields) {
-        final field = formState.fields[fieldName];
-        if (field != null) {
-          // Forzar validación del campo
-          final fieldValue = formState.value[fieldName];
-          
-          // Si está en modo edición y el campo tiene valor inicial, verificar primero
-          // antes de validar para evitar falsos negativos
-          if (isEditing && _initialValues.containsKey(fieldName)) {
-            final initialValue = _initialValues[fieldName];
-            // Si el campo tiene un valor inicial válido y no se ha modificado,
-            // considerarlo válido sin necesidad de validar
-            if (initialValue != null && 
-                initialValue.toString().isNotEmpty && 
-                (fieldValue == null || fieldValue.toString().isEmpty || fieldValue == initialValue)) {
-              print('✅ Campo válido en tab $tabIndex (valor inicial): $fieldName');
-              continue; // Saltar validación, ya tiene valor inicial
-            }
-          }
-          
-          field.didChange(fieldValue);
-          
-          // Validar el campo
-          final fieldValid = field.validate();
-          if (!fieldValid) {
-            hasErrors = true;
-            tabHasErrors = true;
-            tabsWithErrors.add(tabIndex);
-            print('❌ Campo inválido en tab $tabIndex: $fieldName');
-            print('   Valor: $fieldValue');
-            print('   Error: ${field.errorText}');
-          } else {
-            print('✅ Campo válido en tab $tabIndex: $fieldName');
-          }
-        } else {
-          // Campo no registrado - puede ser que el tab no se haya renderizado aún
-          print('⚠️ Campo $fieldName del tab $tabIndex NO está registrado en el formulario');
-          
-          // Verificar si tiene valor en el formState o en valores iniciales
-          final fieldValue = formState.value[fieldName] ?? (isEditing ? _initialValues[fieldName] : null);
-          print('   Valor en formState: ${formState.value[fieldName]}');
-          print('   Valor inicial: ${isEditing ? _initialValues[fieldName] : null}');
-          
-          // Si el campo es requerido y no tiene valor, marcarlo como error
-          final requiredFields = _requiredFields[tabIndex];
-          if (requiredFields != null && requiredFields.contains(fieldName)) {
-            final isEmpty = fieldValue == null || 
-                           (fieldValue is String && fieldValue.trim().isEmpty) ||
-                           (fieldValue is List && fieldValue.isEmpty);
-            
-            if (isEmpty) {
-              hasErrors = true;
-              tabHasErrors = true;
-              tabsWithErrors.add(tabIndex);
-              print('❌ Campo requerido $fieldName del tab $tabIndex está vacío (no registrado)');
-            } else {
-              print('✅ Campo requerido $fieldName del tab $tabIndex tiene valor inicial válido');
-            }
-          }
+        if (_isFieldInvalid(formState, fieldName, tabIndex)) {
+          hasErrors = true;
+          tabHasErrors = true;
         }
       }
       
       if (tabHasErrors) {
-        print('❌ Tab $tabIndex tiene errores');
-      } else {
-        print('✅ Tab $tabIndex está completo');
+        tabsWithErrors.add(tabIndex);
       }
     }
     
     // También validar campos que puedan estar registrados pero no en nuestro mapeo
+    // Esto es útil si se agregan campos dinámicamente o si hay discrepancias
+    final currentFields = _fbKey.currentState?.fields.keys.toSet() ?? {};
     formState.fields.forEach((fieldName, field) {
-      // Solo validar si no lo hemos validado ya
-      bool alreadyValidated = false;
-      for (int tabIndex = 0; tabIndex < _tabFields.length; tabIndex++) {
-        if (_tabFields[tabIndex]!.contains(fieldName)) {
-          alreadyValidated = true;
-          break;
-        }
-      }
-      
-      if (!alreadyValidated) {
+      if (!_isFieldMapped(fieldName)) {
         final fieldValue = formState.value[fieldName];
         field.didChange(fieldValue);
         if (!field.validate()) {
           hasErrors = true;
-          print('❌ Campo inválido (no mapeado): $fieldName - Error: ${field.errorText}');
         }
       }
     });
-    
-    print('📊 DEBUG: Resultado final de validación:');
-    print('   hasErrors: $hasErrors');
-    print('   tabsWithErrors: ${tabsWithErrors.toList()}');
     
     return {
       'isValid': !hasErrors,
@@ -685,6 +578,56 @@ class ChildFormController extends GetxController{
     };
   }
 
+  /// Helper para verificar si un campo está mapeado en alguna tab
+  bool _isFieldMapped(String fieldName) {
+    for (int tabIndex = 0; tabIndex < _tabFields.length; tabIndex++) {
+      if (_tabFields[tabIndex]!.contains(fieldName)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Helper para validar un campo individual y determinar si es inválido
+  bool _isFieldInvalid(FormBuilderState formState, String fieldName, int tabIndex) {
+    final field = formState.fields[fieldName];
+    if (field != null) {
+      // Forzar validación del campo
+      final fieldValue = formState.value[fieldName];
+      
+      // Si está en modo edición y el campo tiene valor inicial, verificar primero
+      // antes de validar para evitar falsos negativos
+      if (isEditing && _initialValues.containsKey(fieldName)) {
+        final initialValue = _initialValues[fieldName];
+        // Si el campo tiene un valor inicial válido y no se ha modificado,
+        // considerarlo válido sin necesidad de validar
+        if (initialValue != null && 
+            initialValue.toString().isNotEmpty && 
+            (fieldValue == null || fieldValue.toString().isEmpty || fieldValue == initialValue)) {
+          return false; // Válido
+        }
+      }
+      
+      field.didChange(fieldValue);
+      
+      // Validar el campo
+      return !field.validate();
+    } else {
+      // Campo no registrado - verificar si es requerido y está vacío
+      final fieldValue = formState.value[fieldName] ?? (isEditing ? _initialValues[fieldName] : null);
+      
+      // Si el campo es requerido y no tiene valor, marcarlo como error
+      final requiredFields = _requiredFields[tabIndex];
+      if (requiredFields != null && requiredFields.contains(fieldName)) {
+        final isEmpty = fieldValue == null || 
+                       (fieldValue is String && fieldValue.trim().isEmpty) ||
+                       (fieldValue is List && fieldValue.isEmpty);
+        
+        return isEmpty;
+      }
+      return false;
+    }
+  }
 
   /// Muestra un modal indicando qué tabs tienen errores y permite navegar a ellos
   void _showTabsWithErrorsModal(List<int> tabsWithErrors, Function(int) onNavigateToTab) {
@@ -711,7 +654,7 @@ class ChildFormController extends GetxController{
           Text(
             "Hay campos obligatorios que deben completarse en las siguientes fichas:",
             style: Theme.of(overlayContext).textTheme.bodyMedium?.merge(
-              TextStyle(color: config.Colors().gray99Color(1), fontSize: 14.sp),
+              TextStyle(color: config.AppColors.gray99Color(1), fontSize: 14.sp),
             ),
             textAlign: TextAlign.left,
           ),
@@ -731,7 +674,7 @@ class ChildFormController extends GetxController{
                     _tabNames[tabIndex] ?? 'Tab $tabIndex',
                     style: Theme.of(overlayContext).textTheme.bodyMedium?.merge(
                       TextStyle(
-                        color: config.Colors().gray99Color(1),
+                        color: config.AppColors.gray99Color(1),
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w600,
                       ),
@@ -745,7 +688,7 @@ class ChildFormController extends GetxController{
           Text(
             "¿Desea ir a la primera ficha con campos pendientes?",
             style: Theme.of(overlayContext).textTheme.bodySmall?.merge(
-              TextStyle(color: config.Colors().gray99Color(0.8), fontSize: 12.sp),
+              TextStyle(color: config.AppColors.gray99Color(0.8), fontSize: 12.sp),
             ),
             textAlign: TextAlign.left,
           ),
@@ -768,7 +711,7 @@ class ChildFormController extends GetxController{
           child: Text(
             "Cancelar",
             style: TextStyle(
-              color: config.Colors().gray99Color(1),
+              color: config.AppColors.gray99Color(1),
               fontSize: 14.sp,
             ),
           ),
@@ -824,7 +767,6 @@ class ChildFormController extends GetxController{
         field.didChange(fieldValue);
         if (!field.validate()) {
           isValid = false;
-          print('❌ Campo inválido en tab $tabIndex: $fieldName - Error: ${field.errorText}');
         }
       }
     });
@@ -834,13 +776,8 @@ class ChildFormController extends GetxController{
 
   /// Punto único para guardar; aquí solo se arma el payload.
   Future<void> saveChild({int? currentTabIndex}) async {
-    print('🚀 DEBUG: Iniciando proceso de guardar niño');
-
     final overlayContext = Get.overlayContext;
-    if (overlayContext == null) {
-      print('❌ DEBUG: overlayContext es null');
-      return;
-    }
+    if (overlayContext == null) return;
 
     final customDialog = CustomDialog(context: overlayContext);
 
@@ -848,6 +785,41 @@ class ChildFormController extends GetxController{
     _hasAttemptedSave.value = true;
     update(['form_child']);
 
+    // Validar el formulario antes de proceder
+    if (!_validateForm(currentTabIndex, customDialog, overlayContext)) {
+      return;
+    }
+    
+    // Recopilar datos
+    final child = collectFormData();
+    if (child == null) return;
+
+    // Mostrar loading
+    customDialog.show();
+
+    try {
+      // Enviar a API
+      final response = await _sendChildData(child);
+
+      // Procesar respuesta
+      if (!response.success) {
+        customDialog.hide();
+        CustomSnackBar(context: Get.overlayContext!).show(message: response.message);
+        return;
+      }
+
+      await _handleSuccess(child, customDialog);
+
+    } catch (e) {
+      customDialog.hide();
+      CustomSnackBar(context: Get.overlayContext!).show(
+        message: 'Error inesperado al guardar el infante'
+      );
+    }
+  }
+
+  /// Helper para validar el formulario y manejar la UI de errores
+  bool _validateForm(int? currentTabIndex, CustomDialog customDialog, BuildContext overlayContext) {
     // Obtener el tab actual si no se pasó como parámetro
     int? activeTabIndex = currentTabIndex;
     if (activeTabIndex == null && onGetCurrentTab != null) {
@@ -856,154 +828,87 @@ class ChildFormController extends GetxController{
 
     // Si no podemos determinar el tab actual, validar todos
     if (activeTabIndex == null) {
-      print('⚠️ DEBUG: No se pudo determinar el tab actual, validando todos');
       final validationResult = _validateAllFieldsWithTabs();
       if (!validationResult['isValid']) {
-        customDialog.hide();
         CustomSnackBar(context: overlayContext).show(
           message: 'Por favor, complete todos los campos obligatorios'
         );
-        return;
+        return false;
       }
-    } else {
-      // Primero validar el tab actual
-      print('🔍 DEBUG: Validando tab actual: $activeTabIndex');
-      final currentTabValid = _validateTab(activeTabIndex);
-      
-      if (!currentTabValid) {
-        print('❌ DEBUG: El tab actual ($activeTabIndex) tiene errores');
-        customDialog.hide();
-        // No mostrar modal, solo validación normal del tab actual
-        CustomSnackBar(context: overlayContext).show(
-          message: 'Por favor, complete todos los campos obligatorios en la ficha actual'
-        );
-        return;
-      }
-
-      print('✅ DEBUG: Tab actual está completo, validando otros tabs');
-      
-      // Si el tab actual está completo, validar todos los otros tabs
-      final validationResult = _validateAllFieldsWithTabs();
-      
-      print('📊 DEBUG: Resultado de validación completa:');
-      print('  isValid: ${validationResult['isValid']}');
-      print('  tabsWithErrors: ${validationResult['tabsWithErrors']}');
-      
-      if (!validationResult['isValid']) {
-        print('❌ DEBUG: Hay errores en otros tabs');
-        customDialog.hide();
-        
-        final tabsWithErrors = validationResult['tabsWithErrors'] as List<int>;
-        print('📋 DEBUG: Tabs con errores: $tabsWithErrors');
-        print('📋 DEBUG: Tab actual: $activeTabIndex');
-        
-        // Filtrar solo los tabs que NO son el actual
-        final otherTabsWithErrors = tabsWithErrors.where((index) => index != activeTabIndex).toList();
-        print('📋 DEBUG: Otros tabs con errores (filtrados): $otherTabsWithErrors');
-        
-        if (otherTabsWithErrors.isNotEmpty && onNavigateToTab != null) {
-          // Mostrar modal solo si hay errores en otros tabs
-          print('✅ DEBUG: Mostrando modal para tabs: $otherTabsWithErrors');
-          _showTabsWithErrorsModal(otherTabsWithErrors, onNavigateToTab!);
-        } else if (otherTabsWithErrors.isNotEmpty) {
-          // Fallback a snackbar si no hay callback
-          print('⚠️ DEBUG: Hay errores pero no hay callback de navegación');
-          CustomSnackBar(context: overlayContext).show(
-            message: 'Por favor, complete todos los campos obligatorios en las demás fichas'
-          );
-        } else {
-          // Si todos los errores están en el tab actual (no debería pasar aquí)
-          print('⚠️ DEBUG: Todos los errores están en el tab actual, esto no debería pasar');
-          CustomSnackBar(context: overlayContext).show(
-            message: 'Por favor, complete todos los campos obligatorios'
-          );
-        }
-        return;
-      }
-    }
+      return true;
+    } 
     
-    print('✅ DEBUG: Todos los tabs están completos');
-
-    // Recopilar datos
-    final child = collectFormData();
-    if (child == null) {
-      print('❌ DEBUG: No se pudo crear el modelo Child');
-      return;
+    // Validar primero el tab actual
+    final currentTabValid = _validateTab(activeTabIndex);
+    if (!currentTabValid) {
+      CustomSnackBar(context: overlayContext).show(
+        message: 'Por favor, complete todos los campos obligatorios en la ficha actual'
+      );
+      return false;
     }
 
-    // Mostrar loading
-    customDialog.show();
-    print('⏳ DEBUG: Mostrando dialog de carga');
-
-    try {
-      // Enviar a API - detectar si es creación o edición
-      ResponseRequest response;
+    // Si el tab actual está completo, validar todos los otros tabs
+    final validationResult = _validateAllFieldsWithTabs();
+    if (!validationResult['isValid']) {
+      final tabsWithErrors = validationResult['tabsWithErrors'] as List<int>;
       
-      if (isEditing && childId != null) {
-        // Modo edición
-        print('📡 DEBUG: Actualizando child existente (ID: $childId)...');
-        response = await ChildRepository().updateChild(
-          child: child,
-          originalFiles: _originalFiles,
+      // Filtrar solo los tabs que NO son el actual
+      final otherTabsWithErrors = tabsWithErrors.where((index) => index != activeTabIndex).toList();
+      
+      if (otherTabsWithErrors.isNotEmpty && onNavigateToTab != null) {
+        // Mostrar modal solo si hay errores en otros tabs
+        _showTabsWithErrorsModal(otherTabsWithErrors, onNavigateToTab!);
+      } else if (otherTabsWithErrors.isNotEmpty) {
+        // Fallback a snackbar si no hay callback
+        CustomSnackBar(context: overlayContext).show(
+          message: 'Por favor, complete todos los campos obligatorios en las demás fichas'
         );
-      } else {
-        // Modo creación
-        print('📡 DEBUG: Creando nuevo child...');
-        response = await ChildRepository().createChild(child: child);
       }
+      return false;
+    }
 
-      // Procesar respuesta
-      if (!response.success) {
-        print('❌ DEBUG: API retornó error');
-        print('  Message: ${response.message}');
-        customDialog.hide();
-        CustomSnackBar(context: Get.overlayContext!).show(message: response.message);
-        return;
-      }
+    return true;
+  }
 
-      print('✅ DEBUG: API retornó éxito ');
-      print('  Message: ${response.message}');
-      // customDialog.hide(); // NO ocultar aquí para evitar parpadeo o espera sin feedback
-
-      // Navegar según el modo
-      if (isEditing && childId != null) {
-        // En modo edición, guardar el child actualizado y mostrar modal de confirmación
-        // Actualizar el child en storage con los datos actualizados antes de limpiar
-        await StorageService.instance.setSelectedChild(child);
-        print('💾 DEBUG: Child actualizado guardado en storage');
-
-        // Actualizar el estado en ChildOptionsController para reflejar los cambios en la vista de detalles
-        try {
-          if (Get.isRegistered<ChildOptionsController>()) {
-            await Get.find<ChildOptionsController>().refreshChildDetails();
-            print('🔄 DEBUG: ChildOptionsController refrescado con los nuevos datos');
-          }
-        } catch (e) {
-          print('⚠️ DEBUG: No se pudo refrescar ChildOptionsController: $e');
-        }
-        
-        // Limpiar formulario después de éxito
-        clearForm();
-        print('🧹 DEBUG: Formulario limpiado después del éxito');
-        
-        customDialog.hide(); // Ocultar justo antes de mostrar el modal de éxito
-        
-        // Mostrar modal de confirmación que navegará al detalle
-        _showUpdateSuccessModal();
-      } else {
-        // En modo creación, limpiar formulario e ir a la pantalla de éxito
-        clearForm();
-        print('🧹 DEBUG: Formulario limpiado después del éxito');
-        customDialog.hide(); // Ocultar antes de navegar
-        Get.offNamed(ChildSuccessScreen.routeName);
-      }
-
-    } catch (e) {
-      print('💥 DEBUG: Error inesperado : $e');
-      customDialog.hide();
-      CustomSnackBar(context: Get.overlayContext!).show(
-        message: 'Error inesperado al guardar el infante'
+  /// Helper para enviar los datos del niño al repositorio
+  Future<ResponseRequest> _sendChildData(Child child) async {
+    if (isEditing && childId != null) {
+      return await ChildRepository().updateChild(
+        child: child,
+        originalFiles: _originalFiles,
       );
+    } else {
+      return await ChildRepository().createChild(child: child);
+    }
+  }
+
+  /// Helper para manejar el éxito de la operación
+  Future<void> _handleSuccess(Child child, CustomDialog customDialog) async {
+    if (isEditing && childId != null) {
+      // En modo edición, guardar el child actualizado y mostrar modal de confirmación
+      await StorageService.instance.setSelectedChild(child);
+
+      // Actualizar el estado en ChildOptionsController para reflejar los cambios en la vista de detalles
+      try {
+        if (Get.isRegistered<ChildOptionsController>()) {
+          await Get.find<ChildOptionsController>().refreshChildDetails();
+        }
+      } catch (_) {
+        // Ignorar error al refrescar
+      }
+      
+      // Limpiar formulario después de éxito
+      clearForm();
+      
+      customDialog.hide();
+      
+      // Mostrar modal de confirmación que navegará al detalle
+      _showUpdateSuccessModal();
+    } else {
+      // En modo creación, limpiar formulario e ir a la pantalla de éxito
+      clearForm();
+      customDialog.hide();
+      Get.offNamed(ChildSuccessScreen.routeName);
     }
   }
 
@@ -1048,7 +953,7 @@ class ChildFormController extends GetxController{
           Text(
             "El infante ha sido actualizado correctamente.",
             style: Theme.of(overlayContext).textTheme.bodyMedium?.merge(
-              TextStyle(color: config.Colors().gray99Color(1), fontSize: 14.sp),
+              TextStyle(color: config.AppColors.gray99Color(1), fontSize: 14.sp),
             ),
             textAlign: TextAlign.center,
           ),

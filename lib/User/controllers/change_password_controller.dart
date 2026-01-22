@@ -62,7 +62,7 @@ class ChangePasswordController extends GetxController {
           Text(
             "Su contraseña ha sido actualizada satisfactoriamente. Por seguridad debe volver a ingresar a la aplicación.",
             style: Theme.of(Get.overlayContext!).textTheme.bodyMedium?.merge(
-              TextStyle(color: config.Colors().gray99Color(1), fontSize: 13.sp)
+              TextStyle(color: config.AppColors.gray99Color(1), fontSize: 13.sp)
             ), 
             textAlign: TextAlign.justify,
           ),

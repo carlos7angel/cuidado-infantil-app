@@ -120,30 +120,20 @@ class DevelopmentItemsByArea {
 
   factory DevelopmentItemsByArea.fromJson(Map<String, dynamic> json) {
     List<DevelopmentItem> itemsList = [];
-    
-    print('🔍 DEBUG DevelopmentItemsByArea.fromJson: json keys: ${json.keys.toList()}');
-    
+        
     if (json['items'] != null && json['items'] is List) {
-      final itemsData = json['items'] as List;
-      print('🔍 DEBUG: Encontrada lista de items con ${itemsData.length} elementos');
-      
+      final itemsData = json['items'] as List;      
       itemsList = itemsData.map((item) {
         try {
           if (item is Map) {
             return DevelopmentItem.fromJson(item as Map<String, dynamic>);
           } else {
-            print('⚠️ WARNING: Item no es un Map, es: ${item.runtimeType}');
             return null;
           }
         } catch (e) {
-          print('❌ ERROR parseando item: $e');
           return null;
         }
       }).whereType<DevelopmentItem>().toList();
-      
-      print('✅ DEBUG: ${itemsList.length} items parseados correctamente');
-    } else {
-      print('⚠️ WARNING: No se encontró campo "items" o no es una lista');
     }
 
     // El API puede retornar 'total' o 'total_items'

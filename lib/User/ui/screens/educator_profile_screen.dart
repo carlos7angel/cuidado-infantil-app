@@ -60,8 +60,7 @@ class _EducatorProfileScreenState extends State<EducatorProfileScreen> {
               actions: <Widget>[
                 GestureDetector(
                   onTap: () async {
-                    final success = await controller.saveProfile();
-                    // El controller ya maneja Get.back() cuando es exitoso
+                    await controller.saveProfile();
                   },
                   child: Container(
                     margin: EdgeInsets.only(right: 15.w),
@@ -334,8 +333,14 @@ class _EducatorProfileScreenState extends State<EducatorProfileScreen> {
                             ),
                             items: [
                               DropdownMenuItem(value: 'La Paz', child: Text('La Paz')),
+                              DropdownMenuItem(value: 'Oruro', child: Text('Oruro')),
+                              DropdownMenuItem(value: 'Potosí', child: Text('Potosí')),
                               DropdownMenuItem(value: 'Cochabamba', child: Text('Cochabamba')),
+                              DropdownMenuItem(value: 'Chuquisaca', child: Text('Chuquisaca')),
+                              DropdownMenuItem(value: 'Tarija', child: Text('Tarija')),
                               DropdownMenuItem(value: 'Santa Cruz', child: Text('Santa Cruz')),
+                              DropdownMenuItem(value: 'Beni', child: Text('Beni')),
+                              DropdownMenuItem(value: 'Pando', child: Text('Pando')),
                             ],
                             initialValue: controller.user?.educator?.state,
                           ),

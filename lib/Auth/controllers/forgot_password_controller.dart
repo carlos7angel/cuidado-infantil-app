@@ -1,5 +1,4 @@
 import 'package:cuidado_infantil/Auth/repositories/auth_repository.dart';
-import 'package:cuidado_infantil/Config/models/response_request.dart';
 import 'package:cuidado_infantil/Config/widgets/custom_dialog.dart';
 import 'package:cuidado_infantil/Config/widgets/custom_snack_bar.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +78,7 @@ class ForgotPasswordController extends GetxController {
           Text(
             "Hemos enviado un enlace de restablecimiento de contraseña a su correo electrónico.",
             style: Theme.of(context).textTheme.bodyMedium?.merge(
-              TextStyle(color: config.Colors().gray99Color(1), fontSize: 14.sp),
+              TextStyle(color: config.AppColors.gray99Color(1), fontSize: 14.sp),
             ),
             textAlign: TextAlign.center,
           ),
@@ -87,7 +86,7 @@ class ForgotPasswordController extends GetxController {
           Text(
             "Por favor, revise su bandeja de entrada y siga las instrucciones para restablecer su contraseña.",
             style: Theme.of(context).textTheme.bodyMedium?.merge(
-              TextStyle(color: config.Colors().gray99Color(1), fontSize: 13.sp),
+              TextStyle(color: config.AppColors.gray99Color(1), fontSize: 13.sp),
             ),
             textAlign: TextAlign.center,
           ),
@@ -144,7 +143,7 @@ class ForgotPasswordController extends GetxController {
           Text(
             errorMessage,
             style: Theme.of(context).textTheme.bodyMedium?.merge(
-              TextStyle(color: config.Colors().gray99Color(1), fontSize: 14.sp),
+              TextStyle(color: config.AppColors.gray99Color(1), fontSize: 14.sp),
             ),
             textAlign: TextAlign.center,
           ),
@@ -152,7 +151,7 @@ class ForgotPasswordController extends GetxController {
           Text(
             "Por favor, verifique que el correo electrónico esté correcto y que esté registrado en el sistema.",
             style: Theme.of(context).textTheme.bodySmall?.merge(
-              TextStyle(color: config.Colors().gray99Color(0.8), fontSize: 12.sp),
+              TextStyle(color: config.AppColors.gray99Color(0.8), fontSize: 12.sp),
             ),
             textAlign: TextAlign.center,
           ),
@@ -186,3 +185,4 @@ class ForgotPasswordController extends GetxController {
     dialog.show(context, dismissable: false);
   }
 }
+

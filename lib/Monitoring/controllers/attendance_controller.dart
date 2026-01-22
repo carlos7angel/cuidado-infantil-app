@@ -62,7 +62,6 @@ class AttendanceController extends GetxController {
     try {
       final response = await ChildcareCenterRepository().getCurrentChildcareCenter();
       if (!response.success) {
-        print('⚠️ No se pudieron cargar los rooms: ${response.message}');
         return;
       }
 
@@ -72,11 +71,10 @@ class AttendanceController extends GetxController {
       final roomsData = childcareCenterData['active_rooms']?['data'] as List?;
       if (roomsData != null && roomsData.isNotEmpty) {
         _rooms = roomsData.map((json) => Room.fromMap(json as Map<String, dynamic>)).toList();
-        print('✅ DEBUG: ${_rooms.length} rooms cargados');
         update(['list_child']);
       }
     } catch (e) {
-      print('❌ ERROR cargando rooms: $e');
+      // Silently fail
     }
   }
 
@@ -89,7 +87,6 @@ class AttendanceController extends GetxController {
     
     final context = Get.overlayContext;
     if (context == null) {
-      print('⚠️  WARNING: overlayContext no disponible, reintentando...');
       await Future.delayed(Duration(milliseconds: 200));
     }
     
@@ -133,7 +130,6 @@ class AttendanceController extends GetxController {
           // Ordenar children por apellido paterno, luego materno, luego nombre
           _children.sort(_sortChildren);
           
-          print('✅ DEBUG: Datos cargados - ${_children.length} children, ${_attendanceResponse!.dates.length} fechas');
           
           // Limpiar filtros al cargar nueva fecha
           _currentSearchQuery = '';
@@ -161,20 +157,17 @@ class AttendanceController extends GetxController {
             targetDateString = DateFormat('yyyy-MM-dd').format(today);
           }
           
-          print('🔍 DEBUG: Buscando fecha objetivo: $targetDateString');
-          print('🔍 DEBUG: Fechas disponibles: ${_attendanceResponse!.dates}');
+          
           
           final targetIndex = _attendanceResponse!.dates.indexWhere((date) => date == targetDateString);
           
           if (targetIndex >= 0) {
             _currentTab = targetIndex;
             _selectedDate = targetDateString;
-            print('✅ DEBUG: Fecha encontrada en índice $targetIndex');
           } else if (_listAttendanceDay.isNotEmpty) {
             // Si no está la fecha objetivo, usar la primera fecha disponible
             _currentTab = 0;
             _selectedDate = _attendanceResponse!.dates[0];
-            print('⚠️ DEBUG: Fecha objetivo no encontrada, usando primera fecha: ${_attendanceResponse!.dates[0]}');
           }
 
           // Marcar que se necesita animar al carousel
@@ -188,11 +181,8 @@ class AttendanceController extends GetxController {
             );
           }
         }
-      } catch (e, stackTrace) {
+      } catch (e) {
         customDialog.hide();
-        print('❌ ERROR EXCEPTION en loadAttendance:');
-        print('  Error: $e');
-        print('  StackTrace: $stackTrace');
         final errorContext = Get.overlayContext;
         if (errorContext != null && errorContext.mounted) {
           CustomSnackBar(context: errorContext).show(
@@ -204,7 +194,6 @@ class AttendanceController extends GetxController {
         update(['list_child']);
       }
     } else {
-      print('❌ ERROR: No se pudo obtener overlayContext para mostrar diálogo');
       _loading = false;
       update(['list_child']);
     }
@@ -362,7 +351,6 @@ class AttendanceController extends GetxController {
   /// Guarda la asistencia de un child
   Future<bool> saveAttendance(String childId, String status) async {
     if (_selectedDate == null) {
-      print('❌ ERROR: No hay fecha seleccionada');
       return false;
     }
 
@@ -376,7 +364,6 @@ class AttendanceController extends GetxController {
       );
 
       if (!response.success) {
-        print('❌ ERROR al guardar asistencia: ${response.message}');
         return false;
       }
 
@@ -397,10 +384,7 @@ class AttendanceController extends GetxController {
       }
 
       return true;
-    } catch (e, stackTrace) {
-      print('❌ ERROR EXCEPTION en saveAttendance:');
-      print('  Error: $e');
-      print('  StackTrace: $stackTrace');
+    } catch (e) {
       return false;
     }
   }
@@ -442,11 +426,9 @@ class AttendanceController extends GetxController {
       }
       
       update(['list_child']);
-      print('✅ DEBUG: Fecha de hoy encontrada en índice $todayIndex, moviendo carousel sin llamar endpoint');
       return true;
     }
     
-    print('⚠️ DEBUG: Fecha de hoy ($todayString) no está en la lista actual, se llamará al endpoint');
     return false;
   }
 }
